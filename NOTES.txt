@@ -1,0 +1,4 @@
+Followed https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication?id=service-account
+
+* service account is created
+* service account invited to the google sheet
