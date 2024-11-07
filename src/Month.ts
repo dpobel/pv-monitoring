@@ -1,18 +1,18 @@
 import { Day } from "./Day";
 
-const MAX_DAYS_BY_MONTH = {
-  "1": 31,
-  "3": 31,
-  "4": 30,
-  "5": 31,
-  "6": 30,
-  "7": 31,
-  "8": 31,
-  "9": 30,
-  "10": 31,
-  "11": 30,
-  "12": 31,
-};
+const MAX_DAYS_BY_MONTH = new Map<number, number>([
+  [1, 31],
+  [3, 31],
+  [4, 30],
+  [5, 31],
+  [6, 30],
+  [7, 31],
+  [8, 31],
+  [9, 30],
+  [10, 31],
+  [11, 30],
+  [12, 31],
+]);
 
 export class Month {
   constructor(
@@ -32,8 +32,8 @@ export class Month {
   }
 
   private getMaximumDay() {
-    if (MAX_DAYS_BY_MONTH[this.month.toString()]) {
-      return MAX_DAYS_BY_MONTH[this.month.toString()];
+    if (MAX_DAYS_BY_MONTH.has(this.month)) {
+      return MAX_DAYS_BY_MONTH.get(this.month);
     }
     if (
       (this.year % 4 === 0 && this.year % 100 !== 0) ||
