@@ -2,12 +2,12 @@ import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryR
 import { Month } from "../Month";
 import {
   InitializeMonthlyReportCommand,
-  InitializeMonthlyReportService,
+  InitializeMonthlyReport,
 } from "./InitializeMonthlyReport";
 
 describe("InitializeMonthlyReportService", () => {
   const monthlyReportRepository = new MemoryMonthlyReportRepository();
-  const sut = new InitializeMonthlyReportService(monthlyReportRepository);
+  const sut = new InitializeMonthlyReport(monthlyReportRepository);
 
   it("should initialize a monthly report", async () => {
     const month = new Month(11, 2024);

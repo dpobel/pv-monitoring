@@ -12,7 +12,7 @@ export class InitializeMonthlyReportCommand {
   constructor(public readonly month: Month) {}
 }
 
-export class InitializeMonthlyReportService {
+export class InitializeMonthlyReport {
   constructor(
     private readonly monthlyReportRepository: MonthlyReportRepository,
   ) {}

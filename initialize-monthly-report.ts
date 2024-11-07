@@ -2,10 +2,10 @@ import { MemoryMonthlyReportRepository } from "./src/adapters/MonthlyReport/Memo
 import { Month } from "./src/Month";
 import {
   InitializeMonthlyReportCommand,
-  InitializeMonthlyReportService,
+  InitializeMonthlyReport,
 } from "./src/usecases/InitializeMonthlyReport";
 
-const service = new InitializeMonthlyReportService(
+const service = new InitializeMonthlyReport(
   new MemoryMonthlyReportRepository(),
 );
 const today = new Date();
