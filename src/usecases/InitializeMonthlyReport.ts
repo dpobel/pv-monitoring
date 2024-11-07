@@ -1,3 +1,4 @@
+import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 import { Month } from "../Month";
 import {
   DailyReport,
@@ -6,7 +7,6 @@ import {
   ProducedSolarEnergy,
   SoldSolarEnergy,
 } from "../MonthlyReport";
-import { MonthlyReportRepository } from "../adapters/reports/MonthlyReportRepository";
 
 export class InitializeMonthlyReportCommand {
   constructor(public readonly month: Month) {}
