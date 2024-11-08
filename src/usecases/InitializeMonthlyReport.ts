@@ -1,4 +1,3 @@
-import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 import { Month } from "../Month";
 import {
   DailyReport,
@@ -7,6 +6,7 @@ import {
   ProducedSolarEnergy,
   SoldSolarEnergy,
 } from "../MonthlyReport";
+import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 
 export class InitializeMonthlyReportCommand {
   constructor(public readonly month: Month) {}
@@ -19,7 +19,7 @@ export class InitializeMonthlyReport {
 
   async execute(command: InitializeMonthlyReportCommand) {
     const report = this._createMonthlyReport(command.month);
-    this.monthlyReportRepository.create(report);
+    await this.monthlyReportRepository.create(report);
   }
 
   private _createMonthlyReport(month: Month) {
