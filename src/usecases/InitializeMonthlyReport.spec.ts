@@ -1,5 +1,5 @@
 import { Month } from "../Month";
-import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryReportRepository";
+import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
 import {
   InitializeMonthlyReport,
   InitializeMonthlyReportCommand,

@@ -7,7 +7,7 @@ import { Month } from "../../Month";
 import { MonthlyReport } from "../../MonthlyReport";
 import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../../SoldSolarEnergy";
-import { GoogleSpreadsheetMonthlyReportRepository } from "./GoogleSpreadsheetReportRepository";
+import { GoogleSpreadsheetMonthlyReportRepository } from "./GoogleSpreadsheetMonthlyReportRepository";
 
 describe("GoogleSpreadsheetReportRepository", () => {
   describe("create", () => {

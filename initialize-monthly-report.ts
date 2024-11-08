@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Month } from "./src/Month";
-import { GoogleSpreadsheetMonthlyReportRepository } from "./src/adapters/MonthlyReport/GoogleSpreadsheetReportRepository";
+import { GoogleSpreadsheetMonthlyReportRepository } from "./src/adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
 import {
   InitializeMonthlyReport,
   InitializeMonthlyReportCommand,
