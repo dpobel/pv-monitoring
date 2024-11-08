@@ -7,8 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    env:
+      TEST_GOOGLE_SPREADSHEET_ID: ${{ vars.TEST_GOOGLE_SPREADSHEET_ID }}
+      TEST_GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.TEST_GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+      TEST_GOOGLE_PRIVATE_KEY: ${{ secrets.TEST_GOOGLE_PRIVATE_KEY }}
 
     steps:
       - uses: actions/checkout@v4
