@@ -1,8 +1,11 @@
 import { JWT } from "google-auth-library";
-import { GoogleSpreadsheet } from "google-spreadsheet";
-import { DailyReport } from "../../DailyReport";
+import {
+  GoogleSpreadsheet,
+  GoogleSpreadsheetWorksheet,
+} from "google-spreadsheet";
 import { MonthlyReport } from "../../MonthlyReport";
 import { MonthlyReportRepository } from "./MonthlyReportRepository";
+import { RowBuilder } from "./RowBuilder";
 
 class MonthlyReportAlreadyExists extends Error {
   constructor(report: MonthlyReport) {
@@ -35,7 +38,10 @@ class MisconfiguredGoogleSpreadsheet extends Error {
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
 {
-  constructor(private readonly config: GoogleSpreadsheetConfig) {
+  constructor(
+    private readonly config: GoogleSpreadsheetConfig,
+    private readonly rowBuilder: RowBuilder,
+  ) {
     if (!config.spreadsheetId) {
       throw new MisconfiguredGoogleSpreadsheet("spreadsheetId");
     }
@@ -79,11 +85,19 @@ export class GoogleSpreadsheetMonthlyReportRepository
     const sheet = await doc.addSheet({
       title: report.name,
       index: 0,
-      headerValues: DailyReport.headers,
+      headerValues: this.rowBuilder.getHeaders(),
     });
 
     for (const dailyReport of report.dailyReports) {
-      await sheet.addRow(dailyReport.buildRow());
+      await sheet.addRow(this.rowBuilder.buildRow(dailyReport));
     }
+    await this.addTotalRow(sheet, report);
+  }
+
+  private async addTotalRow(
+    sheet: GoogleSpreadsheetWorksheet,
+    report: MonthlyReport,
+  ) {
+    await sheet.addRow(this.rowBuilder.buildTotalRow(report));
   }
 }

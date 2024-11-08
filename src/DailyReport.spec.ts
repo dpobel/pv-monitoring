@@ -6,8 +6,8 @@ import { ProducedSolarEnergy } from "./ProducedSolarEnergy";
 import { SoldSolarEnergy } from "./SoldSolarEnergy";
 
 describe("DailyReport", () => {
-  describe("buildRow", () => {
-    it("should return a row", () => {
+  describe("electricityConsumptionEvolution", () => {
+    it("should compute the evolution", () => {
       const dailyReport = new DailyReport(
         new Day(new Month(1, 2021), 1),
         new ElectricityConsumption(10, 20),
@@ -16,21 +16,10 @@ describe("DailyReport", () => {
         new SoldSolarEnergy(5),
       );
 
-      expect(dailyReport.buildRow()).toEqual([
-        "01/01/2021",
-        10,
-        20,
-        30,
-        8,
-        15,
-        23,
-        "-23,33%",
-        4,
-        5,
-      ]);
+      expect(dailyReport.electricityConsumptionEvolution).toEqual("-23,33%");
     });
 
-    it("should handle a report without values for previous year consumption", () => {
+    it("should handle a previous year consumption without values", () => {
       const dailyReport = new DailyReport(
         new Day(new Month(2, 2023), 3),
         new ElectricityConsumption(0, 0),
@@ -39,18 +28,7 @@ describe("DailyReport", () => {
         new SoldSolarEnergy(5),
       );
 
-      expect(dailyReport.buildRow()).toEqual([
-        "03/02/2023",
-        0,
-        0,
-        0,
-        8,
-        15,
-        23,
-        "∞",
-        4,
-        5,
-      ]);
+      expect(dailyReport.electricityConsumptionEvolution).toEqual("∞");
     });
   });
 });
