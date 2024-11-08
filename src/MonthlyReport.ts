@@ -48,16 +48,14 @@ export class DailyReport {
     if (this.previousYearElectricityConsumption.total === 0) {
       return "∞";
     }
-    return (
-      (
-        (100 *
-          (this.electricityConsumption.total -
-            this.previousYearElectricityConsumption.total)) /
-        this.previousYearElectricityConsumption.total
-      )
-        .toFixed(2)
-        .replace(".", ",") + "%"
-    );
+    return `${(
+      (100 *
+        (this.electricityConsumption.total -
+          this.previousYearElectricityConsumption.total)) /
+      this.previousYearElectricityConsumption.total
+    )
+      .toFixed(2)
+      .replace(".", ",")}%`;
   }
 
   private get(name: HEADERS): number | string {
