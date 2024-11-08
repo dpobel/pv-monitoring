@@ -1,6 +1,7 @@
 import { JWT } from "google-auth-library";
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import { DailyReport, MonthlyReport } from "../../MonthlyReport";
+import { DailyReport } from "../../DailyReport";
+import { MonthlyReport } from "../../MonthlyReport";
 import { MonthlyReportRepository } from "./MonthlyReportRepository";
 
 class MonthlyReportAlreadyExists extends Error {

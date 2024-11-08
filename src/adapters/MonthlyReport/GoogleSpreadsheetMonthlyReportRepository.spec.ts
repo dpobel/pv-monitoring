@@ -1,15 +1,13 @@
 import { JWT } from "google-auth-library";
 import { GoogleSpreadsheet } from "google-spreadsheet";
+import { DailyReport } from "../../DailyReport";
 import { Day } from "../../Day";
+import { ElectricityConsumption } from "../../ElectricityConsumption";
 import { Month } from "../../Month";
-import {
-  DailyReport,
-  ElectricityConsumption,
-  MonthlyReport,
-  ProducedSolarEnergy,
-  SoldSolarEnergy,
-} from "../../MonthlyReport";
-import { GoogleSpreadsheetMonthlyReportRepository } from "./GoogleSpreadsheetReportRepository";
+import { MonthlyReport } from "../../MonthlyReport";
+import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
+import { SoldSolarEnergy } from "../../SoldSolarEnergy";
+import { GoogleSpreadsheetMonthlyReportRepository } from "./GoogleSpreadsheetMonthlyReportRepository";
 
 describe("GoogleSpreadsheetReportRepository", () => {
   describe("create", () => {

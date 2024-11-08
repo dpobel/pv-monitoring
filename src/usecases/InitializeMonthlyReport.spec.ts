@@ -1,8 +1,8 @@
-import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryReportRepository";
 import { Month } from "../Month";
+import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
 import {
-  InitializeMonthlyReportCommand,
   InitializeMonthlyReport,
+  InitializeMonthlyReportCommand,
 } from "./InitializeMonthlyReport";
 
 describe("InitializeMonthlyReportService", () => {
@@ -29,8 +29,8 @@ describe("InitializeMonthlyReportService", () => {
         offPeakHours: 0,
         peakHours: 0,
       });
-      expect(dailyReport.producedSolarEnergy).toEqual({ production: 0 });
-      expect(dailyReport.soldSolarEnergy).toEqual({ production: 0 });
+      expect(dailyReport.producedSolarEnergy).toEqual({ quantity: 0 });
+      expect(dailyReport.soldSolarEnergy).toEqual({ quantity: 0 });
     });
   });
 });
