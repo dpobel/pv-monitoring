@@ -1,11 +1,9 @@
+import { DailyReport } from "../DailyReport";
+import { ElectricityConsumption } from "../ElectricityConsumption";
 import { Month } from "../Month";
-import {
-  DailyReport,
-  ElectricityConsumption,
-  MonthlyReport,
-  ProducedSolarEnergy,
-  SoldSolarEnergy,
-} from "../MonthlyReport";
+import { MonthlyReport } from "../MonthlyReport";
+import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
+import { SoldSolarEnergy } from "../SoldSolarEnergy";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 
 export class InitializeMonthlyReportCommand {
