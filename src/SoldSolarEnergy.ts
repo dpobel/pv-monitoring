@@ -1,3 +1,3 @@
 export class SoldSolarEnergy {
-  constructor(public readonly production: number) {}
+  constructor(public readonly quantity: number) {}
 }

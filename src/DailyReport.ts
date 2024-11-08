@@ -67,10 +67,10 @@ export class DailyReport {
       return this.electricityConsumptionEvolution;
     }
     if (name === HEADERS.PRODUCE_SOLAR_ENERGY) {
-      return this.producedSolarEnergy.production;
+      return this.producedSolarEnergy.quantity;
     }
     if (name === HEADERS.SOLD_SOLAR_ENERGY) {
-      return this.soldSolarEnergy.production;
+      return this.soldSolarEnergy.quantity;
     }
     throw new Error(`Unknown header: ${name}`);
   }
