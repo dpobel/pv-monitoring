@@ -1,0 +1,180 @@
+{
+  "LineChart": {
+    "fields": {
+      "xAxis": {
+        "rule": "repeated",
+        "type": "string",
+        "id": 1
+      },
+      "series": {
+        "rule": "repeated",
+        "type": "LineSeries",
+        "id": 2
+      },
+      "type": {
+        "type": "string",
+        "id": 3
+      }
+    }
+  },
+  "LineSeries": {
+    "fields": {
+      "type": {
+        "type": "string",
+        "id": 1
+      },
+      "data": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 2
+      },
+      "did": {
+        "type": "int32",
+        "id": 3
+      },
+      "port": {
+        "type": "int32",
+        "id": 4
+      }
+    }
+  },
+  "LineChartArray": {
+    "fields": {
+      "lineCharts": {
+        "rule": "repeated",
+        "type": "LineChart",
+        "id": 1
+      }
+    }
+  },
+  "PlayPowerChart": {
+    "fields": {
+      "date": {
+        "type": "string",
+        "id": 1
+      },
+      "xAxis": {
+        "rule": "repeated",
+        "type": "string",
+        "id": 2
+      },
+      "data": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 3
+      },
+      "atStep": {
+        "rule": "repeated",
+        "type": "int32",
+        "id": 4
+      },
+      "timeLong": {
+        "rule": "repeated",
+        "type": "int64",
+        "id": 5
+      }
+    }
+  },
+  "PlayPowerChartArray": {
+    "fields": {
+      "powerCharts": {
+        "rule": "repeated",
+        "type": "PlayPowerChart",
+        "id": 1
+      }
+    }
+  },
+  "PlayModuleData": {
+    "fields": {
+      "sid": {
+        "type": "int32",
+        "id": 1
+      },
+      "date": {
+        "type": "string",
+        "id": 2
+      },
+      "microDataMap": {
+        "keyType": "int32",
+        "type": "PlayMicroData",
+        "id": 3
+      }
+    }
+  },
+  "PlayMicroData": {
+    "fields": {
+      "portNum": {
+        "type": "int32",
+        "id": 1
+      },
+      "time": {
+        "rule": "repeated",
+        "type": "string",
+        "id": 2
+      },
+      "portDataMap": {
+        "keyType": "int32",
+        "type": "PlayPortDataArray",
+        "id": 4
+      },
+      "pnHz": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 5
+      },
+      "pnTemp": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 6
+      },
+      "pnUA": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 7
+      },
+      "pnUB": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 8
+      },
+      "pnUC": {
+        "rule": "repeated",
+        "type": "float",
+        "id": 9
+      }
+    }
+  },
+  "PlayPortDataArray": {
+    "fields": {
+      "moduleData": {
+        "rule": "repeated",
+        "type": "PlayPortData",
+        "id": 1
+      }
+    }
+  },
+  "PlayPortData": {
+    "fields": {
+      "pvU": {
+        "type": "float",
+        "id": 1
+      },
+      "pvI": {
+        "type": "float",
+        "id": 2
+      },
+      "bnP": {
+        "type": "float",
+        "id": 3
+      },
+      "totalEq": {
+        "type": "float",
+        "id": 4
+      },
+      "faultCode": {
+        "type": "int32",
+        "id": 5
+      }
+    }
+  }
+}
