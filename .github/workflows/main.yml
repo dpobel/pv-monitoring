@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     env:
       TEST_GOOGLE_SPREADSHEET_ID: ${{ vars.TEST_GOOGLE_SPREADSHEET_ID }}
