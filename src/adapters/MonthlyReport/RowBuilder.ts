@@ -12,6 +12,7 @@ const HEADERS = {
   Évolution: "H",
   "Production PV": "I",
   "Qté vendue": "J",
+  "Gain vente": "K",
 };
 
 type Formula = string;
@@ -27,6 +28,7 @@ type Row = {
   Évolution: Formula;
   "Production PV": number;
   "Qté vendue": number;
+  "Gain vente": Formula;
 };
 
 type TotalRow = {
@@ -40,6 +42,7 @@ type TotalRow = {
   Évolution: Formula;
   "Production PV": Formula;
   "Qté vendue": Formula;
+  "Gain vente": Formula;
 };
 
 type RowName =
@@ -52,7 +55,8 @@ type RowName =
   | "Total"
   | "Évolution"
   | "Production PV"
-  | "Qté vendue";
+  | "Qté vendue"
+  | "Gain vente";
 
 export class RowBuilder {
   getHeaders() {
@@ -81,6 +85,10 @@ export class RowBuilder {
       Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
       "Production PV": dailyReport.producedSolarEnergy.quantity,
       "Qté vendue": dailyReport.soldSolarEnergy.quantity,
+      "Gain vente": `=${this.getA1Notation(
+        "Qté vendue",
+        rowIndex,
+      )}*'Données de base'!$B$3`,
     };
   }
 
@@ -161,6 +169,11 @@ export class RowBuilder {
       ),
       "Qté vendue": this.getSumColumnFormula(
         "Qté vendue",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Gain vente": this.getSumColumnFormula(
+        "Gain vente",
         firstRowValueIndex,
         latestRowValueIndex,
       ),
