@@ -10,4 +10,8 @@ export class MonthlyReport {
   get name() {
     return `Relevé ${this.month.name}`;
   }
+
+  get countDailyReports() {
+    return this.dailyReports.length;
+  }
 }

@@ -5,15 +5,19 @@ import {
   InitializeMonthlyReport,
   InitializeMonthlyReportCommand,
 } from "./src/usecases/InitializeMonthlyReport";
+import { RowBuilder } from "./src/adapters/MonthlyReport/RowBuilder";
 
 const service = new InitializeMonthlyReport(
-  new GoogleSpreadsheetMonthlyReportRepository({
-    credentials: {
-      clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
-      privateKey: process.env.GOOGLE_PRIVATE_KEY || "",
+  new GoogleSpreadsheetMonthlyReportRepository(
+    {
+      credentials: {
+        clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
+        privateKey: process.env.GOOGLE_PRIVATE_KEY || "",
+      },
+      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || "",
     },
-    spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || "",
-  }),
+    new RowBuilder(),
+  ),
 );
 const today = new Date();
 await service.execute(

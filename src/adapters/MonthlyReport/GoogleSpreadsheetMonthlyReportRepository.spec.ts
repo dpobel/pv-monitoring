@@ -8,6 +8,7 @@ import { MonthlyReport } from "../../MonthlyReport";
 import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../../SoldSolarEnergy";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./GoogleSpreadsheetMonthlyReportRepository";
+import { RowBuilder } from "./RowBuilder";
 
 describe("GoogleSpreadsheetReportRepository", () => {
   describe("create", () => {
@@ -18,7 +19,10 @@ describe("GoogleSpreadsheetReportRepository", () => {
         privateKey: process.env.TEST_GOOGLE_PRIVATE_KEY || "",
       },
     };
-    const sut = new GoogleSpreadsheetMonthlyReportRepository(config);
+    const sut = new GoogleSpreadsheetMonthlyReportRepository(
+      config,
+      new RowBuilder(),
+    );
     const doc = new GoogleSpreadsheet(
       config.spreadsheetId,
       new JWT({
@@ -51,6 +55,13 @@ describe("GoogleSpreadsheetReportRepository", () => {
           new ProducedSolarEnergy(13),
           new SoldSolarEnergy(17),
         ),
+        new DailyReport(
+          new Day(month, 2),
+          new ElectricityConsumption(10, 10),
+          new ElectricityConsumption(10, 10),
+          new ProducedSolarEnergy(0),
+          new SoldSolarEnergy(0),
+        ),
       ];
       const report = new MonthlyReport(month, dailyReports);
       await sut.create(report);
@@ -59,11 +70,13 @@ describe("GoogleSpreadsheetReportRepository", () => {
       expect(sheet).toBeDefined();
       const csvStream = await sheet.downloadAsCSV();
       const lines = csvStream.toString().split("\n");
-      expect(lines.length).toEqual(dailyReports.length + 1);
+      expect(lines.length).toEqual(dailyReports.length + 2);
       expect(lines[0].trim()).toEqual(
         "Date,HC an-1,HP an-1,Total an-1,HC,HP,Total,Évolution,Production PV,Qté vendue",
       );
-      expect(lines[1]).toEqual('01/11/2024,2,9,11,3,4,7,"-36,36%",13,17');
-    }, 10000);
+      expect(lines[1].trim()).toEqual("01/11/2024,2,9,11,3,4,7,-36%,13,17");
+      expect(lines[2].trim()).toEqual("02/11/2024,10,10,20,10,10,20,0%,0,0");
+      expect(lines[3].trim()).toEqual("Total,12,19,31,13,14,27,-13%,13,17");
+    }, 20000);
   });
 });
