@@ -11,18 +11,4 @@ export class DailyReport {
     public readonly producedSolarEnergy: ProducedSolarEnergy,
     public readonly soldSolarEnergy: SoldSolarEnergy,
   ) {}
-
-  public get electricityConsumptionEvolution() {
-    if (this.previousYearElectricityConsumption.total === 0) {
-      return "∞";
-    }
-    return `${(
-      (100 *
-        (this.electricityConsumption.total -
-          this.previousYearElectricityConsumption.total)) /
-      this.previousYearElectricityConsumption.total
-    )
-      .toFixed(2)
-      .replace(".", ",")}%`;
-  }
 }

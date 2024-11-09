@@ -74,13 +74,9 @@ describe("GoogleSpreadsheetReportRepository", () => {
       expect(lines[0].trim()).toEqual(
         "Date,HC an-1,HP an-1,Total an-1,HC,HP,Total,Évolution,Production PV,Qté vendue",
       );
-      expect(lines[1].trim()).toEqual(
-        '01/11/2024,2,9,11,3,4,7,"-36,36%",13,17',
-      );
-      expect(lines[2].trim()).toEqual(
-        '02/11/2024,10,10,20,10,10,20,"0,00%",0,0',
-      );
+      expect(lines[1].trim()).toEqual("01/11/2024,2,9,11,3,4,7,-36%,13,17");
+      expect(lines[2].trim()).toEqual("02/11/2024,10,10,20,10,10,20,0%,0,0");
       expect(lines[3].trim()).toEqual("Total,12,19,31,13,14,27,-13%,13,17");
-    }, 10000);
+    }, 20000);
   });
 });

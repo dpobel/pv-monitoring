@@ -88,8 +88,10 @@ export class GoogleSpreadsheetMonthlyReportRepository
       headerValues: this.rowBuilder.getHeaders(),
     });
 
+    let rowIndex = 2; // header + 1
     for (const dailyReport of report.dailyReports) {
-      await sheet.addRow(this.rowBuilder.buildRow(dailyReport));
+      await sheet.addRow(this.rowBuilder.buildRow(dailyReport, rowIndex));
+      rowIndex++;
     }
     await this.addTotalRow(sheet, report);
   }
