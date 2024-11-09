@@ -100,13 +100,16 @@ export class RowBuilder {
     valueName: RowName,
     valueIndex: number,
   ): Formula {
-    return `=TO_PERCENT((${this.getA1Notation(
+    return `=IF(${this.getA1Notation(
+      baseName,
+      valueIndex,
+    )}; TO_PERCENT((${this.getA1Notation(
       valueName,
       valueIndex,
     )}-${this.getA1Notation(baseName, valueIndex)})/${this.getA1Notation(
       baseName,
       valueIndex,
-    )})`;
+    )}); "N/A")`;
   }
 
   buildTotalRow(report: MonthlyReport): TotalRow {
