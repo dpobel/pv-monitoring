@@ -14,30 +14,32 @@ const HEADERS = {
   "Qté vendue": "J",
 };
 
+type Formula = string;
+
 type Row = {
   Date: string;
   "HC an-1": number;
   "HP an-1": number;
-  "Total an-1": string;
+  "Total an-1": Formula;
   HC: number;
   HP: number;
-  Total: string;
-  Évolution: string;
+  Total: Formula;
+  Évolution: Formula;
   "Production PV": number;
   "Qté vendue": number;
 };
 
 type TotalRow = {
   Date: string;
-  "HC an-1": string;
-  "HP an-1": string;
-  "Total an-1": string;
-  HC: string;
-  HP: string;
-  Total: string;
-  Évolution: string;
-  "Production PV": string;
-  "Qté vendue": string;
+  "HC an-1": Formula;
+  "HP an-1": Formula;
+  "Total an-1": Formula;
+  HC: Formula;
+  HP: Formula;
+  Total: Formula;
+  Évolution: Formula;
+  "Production PV": Formula;
+  "Qté vendue": Formula;
 };
 
 type RowName =
@@ -86,7 +88,7 @@ export class RowBuilder {
     rowName: RowName,
     firstRowValueIndex: number,
     latestRowValueIndex: number,
-  ) {
+  ): Formula {
     return `=SUM(${this.getA1Notation(
       rowName,
       firstRowValueIndex,
@@ -97,7 +99,7 @@ export class RowBuilder {
     baseName: RowName,
     valueName: RowName,
     valueIndex: number,
-  ) {
+  ): Formula {
     return `=TO_PERCENT((${this.getA1Notation(
       valueName,
       valueIndex,
