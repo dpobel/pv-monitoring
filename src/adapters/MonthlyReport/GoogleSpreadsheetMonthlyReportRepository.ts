@@ -82,24 +82,38 @@ export class GoogleSpreadsheetMonthlyReportRepository
     if (doc.sheetsByTitle[report.name]) {
       throw new MonthlyReportAlreadyExists(report);
     }
+    const headerRowIndex = 3;
     const sheet = await doc.addSheet({
       title: report.name,
       index: 0,
       headerValues: this.rowBuilder.getHeaders(),
+      headerRowIndex,
     });
 
-    let rowIndex = 2; // header + 1
+    await sheet.loadCells("A1:F1");
+    sheet.getCellByA1("A1").value = "Prix HC/kwh";
+    sheet.getCellByA1("B1").numberValue = 0.204;
+    sheet.getCellByA1("C1").value = "Prix HP/kwh";
+    sheet.getCellByA1("D1").numberValue = 0.2672;
+    sheet.getCellByA1("E1").value = "Prix revente/kwh";
+    sheet.getCellByA1("F1").numberValue = 0.1276;
+    await sheet.saveUpdatedCells();
+
+    let rowIndex = headerRowIndex + 1;
     for (const dailyReport of report.dailyReports) {
       await sheet.addRow(this.rowBuilder.buildRow(dailyReport, rowIndex));
       rowIndex++;
     }
-    await this.addTotalRow(sheet, report);
+    await this.addTotalRow(sheet, report, headerRowIndex + 1);
   }
 
   private async addTotalRow(
     sheet: GoogleSpreadsheetWorksheet,
     report: MonthlyReport,
+    firstRowValueIndex: number,
   ) {
-    await sheet.addRow(this.rowBuilder.buildTotalRow(report));
+    await sheet.addRow(
+      this.rowBuilder.buildTotalRow(report, firstRowValueIndex),
+    );
   }
 }

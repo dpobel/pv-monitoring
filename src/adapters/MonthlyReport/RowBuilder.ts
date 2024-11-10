@@ -6,13 +6,15 @@ const HEADERS = {
   "HC an-1": "B",
   "HP an-1": "C",
   "Total an-1": "D",
-  HC: "E",
-  HP: "F",
-  Total: "G",
-  Évolution: "H",
-  "Production PV": "I",
-  "Qté vendue": "J",
-  "Gain vente": "K",
+  "Prix an-1": "E",
+  HC: "F",
+  HP: "G",
+  Total: "H",
+  Prix: "I",
+  Évolution: "J",
+  "Production PV": "K",
+  "Qté vendue": "L",
+  "Gain vente": "M",
 };
 
 type Formula = string;
@@ -22,9 +24,11 @@ type Row = {
   "HC an-1": number;
   "HP an-1": number;
   "Total an-1": Formula;
+  "Prix an-1": Formula;
   HC: number;
   HP: number;
   Total: Formula;
+  Prix: Formula;
   Évolution: Formula;
   "Production PV": number;
   "Qté vendue": number;
@@ -36,9 +40,11 @@ type TotalRow = {
   "HC an-1": Formula;
   "HP an-1": Formula;
   "Total an-1": Formula;
+  "Prix an-1": Formula;
   HC: Formula;
   HP: Formula;
   Total: Formula;
+  Prix: Formula;
   Évolution: Formula;
   "Production PV": Formula;
   "Qté vendue": Formula;
@@ -50,9 +56,11 @@ type RowName =
   | "HC an-1"
   | "HP an-1"
   | "Total an-1"
+  | "Prix an-1"
   | "HC"
   | "HP"
   | "Total"
+  | "Prix"
   | "Évolution"
   | "Production PV"
   | "Qté vendue"
@@ -76,19 +84,24 @@ export class RowBuilder {
         "HC an-1",
         rowIndex,
       )}+${this.getA1Notation("HP an-1", rowIndex)}`,
+      "Prix an-1": `=${this.getA1Notation(
+        "HC an-1",
+        rowIndex,
+      )}*B1/1000+${this.getA1Notation("HP an-1", rowIndex)}*D1/1000`,
       HC: dailyReport.electricityConsumption.offPeakHours,
       HP: dailyReport.electricityConsumption.peakHours,
       Total: `=${this.getA1Notation("HC", rowIndex)}+${this.getA1Notation(
         "HP",
         rowIndex,
       )}`,
+      Prix: `=${this.getA1Notation(
+        "HC",
+        rowIndex,
+      )}*B1/1000+${this.getA1Notation("HP", rowIndex)}*D1/1000`,
       Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
       "Production PV": dailyReport.producedSolarEnergy.quantity,
       "Qté vendue": dailyReport.soldSolarEnergy.quantity,
-      "Gain vente": `=${this.getA1Notation(
-        "Qté vendue",
-        rowIndex,
-      )}*'Données de base'!$B$3`,
+      "Gain vente": `=${this.getA1Notation("Qté vendue", rowIndex)}*F1/1000`,
     };
   }
 
@@ -120,9 +133,9 @@ export class RowBuilder {
     )}); "N/A")`;
   }
 
-  buildTotalRow(report: MonthlyReport): TotalRow {
-    const firstRowValueIndex = 2;
-    const latestRowValueIndex = report.countDailyReports + 1;
+  buildTotalRow(report: MonthlyReport, firstRowValueIndex: number): TotalRow {
+    const latestRowValueIndex =
+      report.countDailyReports + firstRowValueIndex - 1;
     const totalRowValueIndex = latestRowValueIndex + 1;
 
     return {
@@ -142,6 +155,11 @@ export class RowBuilder {
         firstRowValueIndex,
         latestRowValueIndex,
       ),
+      "Prix an-1": this.getSumColumnFormula(
+        "Prix an-1",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
       HC: this.getSumColumnFormula(
         "HC",
         firstRowValueIndex,
@@ -154,6 +172,11 @@ export class RowBuilder {
       ),
       Total: this.getSumColumnFormula(
         "Total",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      Prix: this.getSumColumnFormula(
+        "Prix",
         firstRowValueIndex,
         latestRowValueIndex,
       ),
