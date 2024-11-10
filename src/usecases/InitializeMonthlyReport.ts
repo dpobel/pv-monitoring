@@ -6,8 +6,17 @@ import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../SoldSolarEnergy";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 
+type BasePrices = {
+  offPeakHours: number;
+  peakHours: number;
+  solar: number;
+};
+
 export class InitializeMonthlyReportCommand {
-  constructor(public readonly month: Month) {}
+  constructor(
+    public readonly month: Month,
+    public readonly prices: BasePrices,
+  ) {}
 }
 
 export class InitializeMonthlyReport {
@@ -17,7 +26,7 @@ export class InitializeMonthlyReport {
 
   async execute(command: InitializeMonthlyReportCommand) {
     const report = this._createMonthlyReport(command.month);
-    await this.monthlyReportRepository.create(report);
+    await this.monthlyReportRepository.create(report, command.prices);
   }
 
   private _createMonthlyReport(month: Month) {

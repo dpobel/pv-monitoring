@@ -4,7 +4,7 @@ import {
   GoogleSpreadsheetWorksheet,
 } from "google-spreadsheet";
 import { MonthlyReport } from "../../MonthlyReport";
-import { MonthlyReportRepository } from "./MonthlyReportRepository";
+import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
 import { RowBuilder } from "./RowBuilder";
 
 class MonthlyReportAlreadyExists extends Error {
@@ -76,7 +76,7 @@ export class GoogleSpreadsheetMonthlyReportRepository
     }
   }
 
-  async create(report: MonthlyReport) {
+  async create(report: MonthlyReport, basePrices: BasePrices) {
     const doc = await this.loadDocument();
 
     if (doc.sheetsByTitle[report.name]) {
@@ -92,11 +92,11 @@ export class GoogleSpreadsheetMonthlyReportRepository
 
     await sheet.loadCells("A1:F1");
     sheet.getCellByA1("A1").value = "Prix HC/kwh";
-    sheet.getCellByA1("B1").numberValue = 0.204;
+    sheet.getCellByA1("B1").numberValue = basePrices.offPeakHours;
     sheet.getCellByA1("C1").value = "Prix HP/kwh";
-    sheet.getCellByA1("D1").numberValue = 0.2672;
+    sheet.getCellByA1("D1").numberValue = basePrices.peakHours;
     sheet.getCellByA1("E1").value = "Prix revente/kwh";
-    sheet.getCellByA1("F1").numberValue = 0.1276;
+    sheet.getCellByA1("F1").numberValue = basePrices.solar;
     await sheet.saveUpdatedCells();
 
     let rowIndex = headerRowIndex + 1;
