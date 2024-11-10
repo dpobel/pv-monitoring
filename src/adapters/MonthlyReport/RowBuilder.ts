@@ -75,7 +75,15 @@ export class RowBuilder {
     return `${HEADERS[rowName]}${rowIndex}`;
   }
 
-  buildRow(dailyReport: DailyReport, rowIndex: number): Row {
+  buildRow(
+    dailyReport: DailyReport,
+    rowIndex: number,
+    basePricesA1Mapping: {
+      offPeakHours: string;
+      peakHours: string;
+      solar: string;
+    },
+  ): Row {
     return {
       Date: dailyReport.day.name,
       "HC an-1": dailyReport.previousYearElectricityConsumption.offPeakHours,
@@ -84,24 +92,28 @@ export class RowBuilder {
         "HC an-1",
         rowIndex,
       )}+${this.getA1Notation("HP an-1", rowIndex)}`,
-      "Prix an-1": `=${this.getA1Notation(
-        "HC an-1",
-        rowIndex,
-      )}*B1/1000+${this.getA1Notation("HP an-1", rowIndex)}*D1/1000`,
+      "Prix an-1": `=${this.getA1Notation("HC an-1", rowIndex)}*${
+        basePricesA1Mapping.offPeakHours
+      }/1000+${this.getA1Notation("HP an-1", rowIndex)}*${
+        basePricesA1Mapping.peakHours
+      }/1000`,
       HC: dailyReport.electricityConsumption.offPeakHours,
       HP: dailyReport.electricityConsumption.peakHours,
       Total: `=${this.getA1Notation("HC", rowIndex)}+${this.getA1Notation(
         "HP",
         rowIndex,
       )}`,
-      Prix: `=${this.getA1Notation(
-        "HC",
-        rowIndex,
-      )}*B1/1000+${this.getA1Notation("HP", rowIndex)}*D1/1000`,
+      Prix: `=${this.getA1Notation("HC", rowIndex)}*${
+        basePricesA1Mapping.offPeakHours
+      }/1000+${this.getA1Notation("HP", rowIndex)}*${
+        basePricesA1Mapping.peakHours
+      }/1000`,
       Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
       "Production PV": dailyReport.producedSolarEnergy.quantity,
       "Qté vendue": dailyReport.soldSolarEnergy.quantity,
-      "Gain vente": `=${this.getA1Notation("Qté vendue", rowIndex)}*F1/1000`,
+      "Gain vente": `=${this.getA1Notation("Qté vendue", rowIndex)}*${
+        basePricesA1Mapping.solar
+      }/1000`,
     };
   }
 

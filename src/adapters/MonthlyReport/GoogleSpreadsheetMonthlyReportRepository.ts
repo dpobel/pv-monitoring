@@ -90,6 +90,22 @@ export class GoogleSpreadsheetMonthlyReportRepository
       headerRowIndex,
     });
 
+    const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
+
+    let rowIndex = headerRowIndex + 1;
+    for (const dailyReport of report.dailyReports) {
+      await sheet.addRow(
+        this.rowBuilder.buildRow(dailyReport, rowIndex, basePricesA1Mapping),
+      );
+      rowIndex++;
+    }
+    await this.addTotalRow(sheet, report, headerRowIndex + 1);
+  }
+
+  private async addBasePrices(
+    sheet: GoogleSpreadsheetWorksheet,
+    basePrices: BasePrices,
+  ) {
     await sheet.loadCells("A1:F1");
     sheet.getCellByA1("A1").value = "Prix HC/kwh";
     sheet.getCellByA1("B1").numberValue = basePrices.offPeakHours;
@@ -99,12 +115,11 @@ export class GoogleSpreadsheetMonthlyReportRepository
     sheet.getCellByA1("F1").numberValue = basePrices.solar;
     await sheet.saveUpdatedCells();
 
-    let rowIndex = headerRowIndex + 1;
-    for (const dailyReport of report.dailyReports) {
-      await sheet.addRow(this.rowBuilder.buildRow(dailyReport, rowIndex));
-      rowIndex++;
-    }
-    await this.addTotalRow(sheet, report, headerRowIndex + 1);
+    return {
+      offPeakHours: "B1",
+      peakHours: "D1",
+      solar: "F1",
+    };
   }
 
   private async addTotalRow(
