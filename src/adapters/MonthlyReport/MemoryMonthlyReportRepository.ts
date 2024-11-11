@@ -1,10 +1,13 @@
 import { MonthlyReport } from "../../MonthlyReport";
-import { MonthlyReportRepository } from "./MonthlyReportRepository";
+import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
 
 export class MemoryMonthlyReportRepository implements MonthlyReportRepository {
-  public readonly reports: MonthlyReport[] = [];
+  public readonly createData: {
+    report: MonthlyReport;
+    basePrices: BasePrices;
+  }[] = [];
 
-  async create(report: MonthlyReport) {
-    this.reports.push(report);
+  async create(report: MonthlyReport, basePrices: BasePrices) {
+    this.createData.push({ report, basePrices });
   }
 }

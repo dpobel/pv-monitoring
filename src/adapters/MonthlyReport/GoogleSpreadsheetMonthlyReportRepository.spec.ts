@@ -64,19 +64,33 @@ describe("GoogleSpreadsheetReportRepository", () => {
         ),
       ];
       const report = new MonthlyReport(month, dailyReports);
-      await sut.create(report);
+      await sut.create(report, {
+        offPeakHours: 0.1,
+        peakHours: 0.2,
+        solar: 0.3,
+      });
       await doc.loadInfo();
       const sheet = doc.sheetsByTitle[report.name];
       expect(sheet).toBeDefined();
       const csvStream = await sheet.downloadAsCSV();
       const lines = csvStream.toString().split("\n");
-      expect(lines.length).toEqual(dailyReports.length + 2);
+      expect(lines.length).toEqual(dailyReports.length + 4);
       expect(lines[0].trim()).toEqual(
-        "Date,HC an-1,HP an-1,Total an-1,HC,HP,Total,Évolution,Production PV,Qté vendue",
+        'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,',
       );
-      expect(lines[1].trim()).toEqual("01/11/2024,2,9,11,3,4,7,-36%,13,17");
-      expect(lines[2].trim()).toEqual("02/11/2024,10,10,20,10,10,20,0%,0,0");
-      expect(lines[3].trim()).toEqual("Total,12,19,31,13,14,27,-13%,13,17");
+      expect(lines[1].trim()).toEqual(",,,,,,,,,,,,");
+      expect(lines[2].trim()).toEqual(
+        "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Production PV,Qté vendue,Gain vente",
+      );
+      expect(lines[3].trim()).toEqual(
+        '01/11/2024,2,9,11,"0,002",3,4,7,"0,0011",-36%,13,17,"0,0051"',
+      );
+      expect(lines[4].trim()).toEqual(
+        '02/11/2024,10,10,20,"0,003",10,10,20,"0,003",0%,0,0,0',
+      );
+      expect(lines[5].trim()).toEqual(
+        'Total,12,19,31,"0,005",13,14,27,"0,0041",-13%,13,17,"0,0051"',
+      );
     }, 20000);
   });
 });

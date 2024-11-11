@@ -6,38 +6,49 @@ const HEADERS = {
   "HC an-1": "B",
   "HP an-1": "C",
   "Total an-1": "D",
-  HC: "E",
-  HP: "F",
-  Total: "G",
-  Évolution: "H",
-  "Production PV": "I",
-  "Qté vendue": "J",
+  "Prix an-1": "E",
+  HC: "F",
+  HP: "G",
+  Total: "H",
+  Prix: "I",
+  Évolution: "J",
+  "Production PV": "K",
+  "Qté vendue": "L",
+  "Gain vente": "M",
 };
+
+type Formula = string;
 
 type Row = {
   Date: string;
   "HC an-1": number;
   "HP an-1": number;
-  "Total an-1": string;
+  "Total an-1": Formula;
+  "Prix an-1": Formula;
   HC: number;
   HP: number;
-  Total: string;
-  Évolution: string;
+  Total: Formula;
+  Prix: Formula;
+  Évolution: Formula;
   "Production PV": number;
   "Qté vendue": number;
+  "Gain vente": Formula;
 };
 
 type TotalRow = {
   Date: string;
-  "HC an-1": string;
-  "HP an-1": string;
-  "Total an-1": string;
-  HC: string;
-  HP: string;
-  Total: string;
-  Évolution: string;
-  "Production PV": string;
-  "Qté vendue": string;
+  "HC an-1": Formula;
+  "HP an-1": Formula;
+  "Total an-1": Formula;
+  "Prix an-1": Formula;
+  HC: Formula;
+  HP: Formula;
+  Total: Formula;
+  Prix: Formula;
+  Évolution: Formula;
+  "Production PV": Formula;
+  "Qté vendue": Formula;
+  "Gain vente": Formula;
 };
 
 type RowName =
@@ -45,12 +56,15 @@ type RowName =
   | "HC an-1"
   | "HP an-1"
   | "Total an-1"
+  | "Prix an-1"
   | "HC"
   | "HP"
   | "Total"
+  | "Prix"
   | "Évolution"
   | "Production PV"
-  | "Qté vendue";
+  | "Qté vendue"
+  | "Gain vente";
 
 export class RowBuilder {
   getHeaders() {
@@ -61,7 +75,15 @@ export class RowBuilder {
     return `${HEADERS[rowName]}${rowIndex}`;
   }
 
-  buildRow(dailyReport: DailyReport, rowIndex: number): Row {
+  buildRow(
+    dailyReport: DailyReport,
+    rowIndex: number,
+    basePricesA1Mapping: {
+      offPeakHours: string;
+      peakHours: string;
+      solar: string;
+    },
+  ): Row {
     return {
       Date: dailyReport.day.name,
       "HC an-1": dailyReport.previousYearElectricityConsumption.offPeakHours,
@@ -70,15 +92,28 @@ export class RowBuilder {
         "HC an-1",
         rowIndex,
       )}+${this.getA1Notation("HP an-1", rowIndex)}`,
+      "Prix an-1": `=${this.getA1Notation("HC an-1", rowIndex)}*${
+        basePricesA1Mapping.offPeakHours
+      }/1000+${this.getA1Notation("HP an-1", rowIndex)}*${
+        basePricesA1Mapping.peakHours
+      }/1000`,
       HC: dailyReport.electricityConsumption.offPeakHours,
       HP: dailyReport.electricityConsumption.peakHours,
       Total: `=${this.getA1Notation("HC", rowIndex)}+${this.getA1Notation(
         "HP",
         rowIndex,
       )}`,
+      Prix: `=${this.getA1Notation("HC", rowIndex)}*${
+        basePricesA1Mapping.offPeakHours
+      }/1000+${this.getA1Notation("HP", rowIndex)}*${
+        basePricesA1Mapping.peakHours
+      }/1000`,
       Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
       "Production PV": dailyReport.producedSolarEnergy.quantity,
       "Qté vendue": dailyReport.soldSolarEnergy.quantity,
+      "Gain vente": `=${this.getA1Notation("Qté vendue", rowIndex)}*${
+        basePricesA1Mapping.solar
+      }/1000`,
     };
   }
 
@@ -86,7 +121,7 @@ export class RowBuilder {
     rowName: RowName,
     firstRowValueIndex: number,
     latestRowValueIndex: number,
-  ) {
+  ): Formula {
     return `=SUM(${this.getA1Notation(
       rowName,
       firstRowValueIndex,
@@ -97,19 +132,22 @@ export class RowBuilder {
     baseName: RowName,
     valueName: RowName,
     valueIndex: number,
-  ) {
-    return `=TO_PERCENT((${this.getA1Notation(
+  ): Formula {
+    return `=IF(${this.getA1Notation(
+      baseName,
+      valueIndex,
+    )}; TO_PERCENT((${this.getA1Notation(
       valueName,
       valueIndex,
     )}-${this.getA1Notation(baseName, valueIndex)})/${this.getA1Notation(
       baseName,
       valueIndex,
-    )})`;
+    )}); "N/A")`;
   }
 
-  buildTotalRow(report: MonthlyReport): TotalRow {
-    const firstRowValueIndex = 2;
-    const latestRowValueIndex = report.countDailyReports + 1;
+  buildTotalRow(report: MonthlyReport, firstRowValueIndex: number): TotalRow {
+    const latestRowValueIndex =
+      report.countDailyReports + firstRowValueIndex - 1;
     const totalRowValueIndex = latestRowValueIndex + 1;
 
     return {
@@ -129,6 +167,11 @@ export class RowBuilder {
         firstRowValueIndex,
         latestRowValueIndex,
       ),
+      "Prix an-1": this.getSumColumnFormula(
+        "Prix an-1",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
       HC: this.getSumColumnFormula(
         "HC",
         firstRowValueIndex,
@@ -144,6 +187,11 @@ export class RowBuilder {
         firstRowValueIndex,
         latestRowValueIndex,
       ),
+      Prix: this.getSumColumnFormula(
+        "Prix",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
       Évolution: this.getEvolutionFormula(
         "Total an-1",
         "Total",
@@ -156,6 +204,11 @@ export class RowBuilder {
       ),
       "Qté vendue": this.getSumColumnFormula(
         "Qté vendue",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Gain vente": this.getSumColumnFormula(
+        "Gain vente",
         firstRowValueIndex,
         latestRowValueIndex,
       ),

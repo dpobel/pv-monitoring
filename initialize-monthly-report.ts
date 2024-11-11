@@ -23,5 +23,6 @@ const today = new Date();
 await service.execute(
   new InitializeMonthlyReportCommand(
     new Month(today.getMonth() + 1, today.getFullYear()),
+    { offPeakHours: 0.204, peakHours: 0.2672, solar: 0.1276 },
   ),
 );

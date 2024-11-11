@@ -11,10 +11,19 @@ describe("InitializeMonthlyReportService", () => {
 
   it("should initialize a monthly report", async () => {
     const month = new Month(11, 2024);
-    await sut.execute(new InitializeMonthlyReportCommand(month));
+    const basePrices = {
+      offPeakHours: 0.1,
+      peakHours: 0.2,
+      solar: 0.3,
+    };
+    await sut.execute(new InitializeMonthlyReportCommand(month, basePrices));
 
-    expect(monthlyReportRepository.reports).toHaveLength(1);
-    const report = monthlyReportRepository.reports[0];
+    expect(monthlyReportRepository.createData).toHaveLength(1);
+    expect(monthlyReportRepository.createData[0].basePrices).toEqual(
+      basePrices,
+    );
+
+    const report = monthlyReportRepository.createData[0].report;
 
     expect(report.month).toEqual(month);
     const monthDays = month.days;
