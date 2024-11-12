@@ -1,3 +1,4 @@
+import { DailyReport } from "../../DailyReport";
 import { MonthlyReport } from "../../MonthlyReport";
 
 export type BasePrices = {
@@ -8,4 +9,6 @@ export type BasePrices = {
 
 export interface MonthlyReportRepository {
   create(report: MonthlyReport, basePrices: BasePrices): Promise<void>;
+
+  store(dailyReport: DailyReport): Promise<void>;
 }

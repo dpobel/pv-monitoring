@@ -20,6 +20,10 @@ export class Month {
     public readonly year: number,
   ) {}
 
+  get reportName() {
+    return `Relevé ${this.name}`;
+  }
+
   get name() {
     return `${this.month.toString().padStart(2, "0")}/${this.year}`;
   }
@@ -29,6 +33,10 @@ export class Month {
     return days.fill(0).map((_, i) => {
       return new Day(this, i + 1);
     });
+  }
+
+  get minusAYear() {
+    return new Month(this.month, this.year - 1);
   }
 
   private getMaximumDay() {

@@ -6,10 +6,23 @@ import {
 import { MonthlyReport } from "../../MonthlyReport";
 import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
 import { RowBuilder } from "./RowBuilder";
+import { DailyReport } from "../../DailyReport";
 
 class MonthlyReportAlreadyExists extends Error {
   constructor(report: MonthlyReport) {
-    super(`Report ${report.name} has already been created`);
+    super(`Report "${report.name}" has already been created`);
+  }
+}
+
+class MonthlyReportNotFound extends Error {
+  constructor(reportName: string) {
+    super(`Report "${reportName}" not found`);
+  }
+}
+
+class DailyReportRowNotFound extends Error {
+  constructor(dailyReport: DailyReport) {
+    super(`Row for daily report of "${dailyReport.day.name}"`);
   }
 }
 
@@ -34,6 +47,8 @@ class MisconfiguredGoogleSpreadsheet extends Error {
     super(`Misconfigured Google Spreadsheet, "${field}" is missing`);
   }
 }
+
+const HEADER_ROW_INDEX = 3;
 
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
@@ -82,42 +97,81 @@ export class GoogleSpreadsheetMonthlyReportRepository
     if (doc.sheetsByTitle[report.name]) {
       throw new MonthlyReportAlreadyExists(report);
     }
-    const headerRowIndex = 3;
     const sheet = await doc.addSheet({
       title: report.name,
       index: 0,
       headerValues: this.rowBuilder.getHeaders(),
-      headerRowIndex,
+      headerRowIndex: HEADER_ROW_INDEX,
     });
 
     const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
 
-    let rowIndex = headerRowIndex + 1;
+    let rowIndex = HEADER_ROW_INDEX + 1;
     for (const dailyReport of report.dailyReports) {
       await sheet.addRow(
         this.rowBuilder.buildRow(dailyReport, rowIndex, basePricesA1Mapping),
       );
       rowIndex++;
     }
-    await this.addTotalRow(sheet, report, headerRowIndex + 1);
+    await this.addTotalRow(sheet, report, HEADER_ROW_INDEX + 1);
+  }
+
+  private async findRow(dailyReport: DailyReport) {
+    const doc = await this.loadDocument();
+    const reportName = dailyReport.reportName;
+
+    if (!doc.sheetsByTitle[reportName]) {
+      throw new MonthlyReportNotFound(reportName);
+    }
+    const sheet = doc.sheetsByTitle[reportName];
+    await sheet.loadHeaderRow(HEADER_ROW_INDEX);
+    const rows = await sheet.getRows();
+
+    return rows.find((row) => {
+      return row.get("Date") === dailyReport.day.name;
+    });
+  }
+
+  async store(dailyReport: DailyReport): Promise<void> {
+    const row = await this.findRow(dailyReport);
+    if (!row) {
+      throw new DailyReportRowNotFound(dailyReport);
+    }
+    const basePricesA1Mapping = this.getBasePricesA1Mapping();
+    row.assign(
+      this.rowBuilder.buildRow(dailyReport, row.rowNumber, basePricesA1Mapping),
+    );
+    await row.save();
   }
 
   private async addBasePrices(
     sheet: GoogleSpreadsheetWorksheet,
     basePrices: BasePrices,
   ) {
-    await sheet.loadCells("A1:F1");
-    sheet.getCellByA1("A1").value = "Prix HC/kwh";
-    sheet.getCellByA1("B1").numberValue = basePrices.offPeakHours;
-    sheet.getCellByA1("C1").value = "Prix HP/kwh";
-    sheet.getCellByA1("D1").numberValue = basePrices.peakHours;
-    sheet.getCellByA1("E1").value = "Prix revente/kwh";
-    sheet.getCellByA1("F1").numberValue = basePrices.solar;
+    const basePricesA1Mapping = this.getBasePricesA1Mapping();
+    await sheet.loadCells(Object.values(basePricesA1Mapping));
+    sheet.getCellByA1(basePricesA1Mapping.offPeakHoursLabel).value =
+      "Prix HC/kwh";
+    sheet.getCellByA1(basePricesA1Mapping.offPeakHours).numberValue =
+      basePrices.offPeakHours;
+    sheet.getCellByA1(basePricesA1Mapping.peakHoursLabel).value = "Prix HP/kwh";
+    sheet.getCellByA1(basePricesA1Mapping.peakHours).numberValue =
+      basePrices.peakHours;
+    sheet.getCellByA1(basePricesA1Mapping.solarLabel).value =
+      "Prix revente/kwh";
+    sheet.getCellByA1(basePricesA1Mapping.solar).numberValue = basePrices.solar;
     await sheet.saveUpdatedCells();
 
+    return basePricesA1Mapping;
+  }
+
+  private getBasePricesA1Mapping() {
     return {
+      offPeakHoursLabel: "A1",
       offPeakHours: "B1",
+      peakHoursLabel: "C1",
       peakHours: "D1",
+      solarLabel: "E1",
       solar: "F1",
     };
   }

@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "initialize-monthly-report": "tsx initialize-monthly-report.ts",
+    "fill-yesterday-report": "tsx fill-yesterday-report.ts",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
     "test": "jest"
