@@ -10,6 +10,10 @@ export class Day {
     return `${this.day.toString().padStart(2, "0")}/${this.month.name}`;
   }
 
+  get YYYYMMDD() {
+    return `${this.month.year}-${this.month.month}-${this.day}`;
+  }
+
   get minusAYear() {
     // TODO leap year ?
     return new Day(this.month.minusAYear, this.day);

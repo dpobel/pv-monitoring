@@ -10,4 +10,9 @@ describe("Day", () => {
       expect(day2.name).toEqual("12/11/2024");
     });
   });
+
+  describe("YYYYMMDD", () => {
+    const day = new Day(new Month(11, 2024), 12);
+    expect(day.YYYYMMDD).toEqual("2024-11-12");
+  });
 });
