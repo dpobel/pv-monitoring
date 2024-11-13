@@ -2,6 +2,7 @@ import nock from "nock";
 import { Day } from "../../Day";
 import { Month } from "../../Month";
 import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
+import { NullLogger } from "../Logger/NullLogger";
 import {
   FailToGenerateToken,
   FailToRetrieveProducedSolarEnergy,
@@ -13,11 +14,14 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
   const password = "password";
   const plantId = "an-id";
   const day = new Day(new Month(11, 2024), 13);
-  const sut = new HoymilesWebAPIProducedSolarEnergyFetcher({
-    username,
-    password,
-    plantId,
-  });
+  const sut = new HoymilesWebAPIProducedSolarEnergyFetcher(
+    {
+      username,
+      password,
+      plantId,
+    },
+    new NullLogger(),
+  );
   describe("fetch", () => {
     afterEach(() => {
       nock.cleanAll();

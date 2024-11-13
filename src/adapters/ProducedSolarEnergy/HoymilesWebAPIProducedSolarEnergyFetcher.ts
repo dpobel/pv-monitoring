@@ -1,7 +1,8 @@
+import { createHash } from "node:crypto";
 import { Day } from "../../Day";
 import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
+import { Logger } from "../Logger/Logger";
 import { ProducedSolarEnergyFetcher } from "./ProducedSolarEnergyFetcher";
-import { createHash } from "node:crypto";
 
 const USER_AGENT = "Please provide a publicly available API";
 
@@ -44,6 +45,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
       password: string;
       plantId: string;
     },
+    private readonly logger: Logger,
   ) {}
 
   private hashPassword(password: string) {
@@ -55,6 +57,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
 
   private async generateToken() {
     try {
+      this.logger.info(`Generating a token for ${this.config.username}`);
       const response = await fetch(
         "https://global.hoymiles.com/platform/api/gateway/iam/auth_login",
         {
@@ -104,6 +107,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
           end_date: day.YYYYMMDD,
         },
       };
+      this.logger.info(`Fetching production for ${day.name}`, query);
       const response = await fetch(
         "https://global.hoymiles.com/platform/api/gateway/pvm-report/report_count_eq_by_station",
         {
@@ -124,6 +128,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
           total_consumption_eq: string;
         };
       };
+      this.logger.info("Received production data", data);
       if (data.status !== "0") {
         throw new FailureResponse(data.message, data);
       }
