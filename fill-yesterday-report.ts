@@ -23,8 +23,8 @@ const day = new Day(
 const service = new FillDailyReport(
   new MemoryElectricityConsumptionFetcher(
     new Map([
-      [day.minusAYear.name, new ElectricityConsumption(6000, 5000)],
-      [day.name, new ElectricityConsumption(1530, 4000)],
+      [day.minusAYear.name, new ElectricityConsumption(0, 0)],
+      [day.name, new ElectricityConsumption(0, 0)],
     ]),
   ),
   new HoymilesWebAPIProducedSolarEnergyFetcher({
@@ -32,7 +32,7 @@ const service = new FillDailyReport(
     password: process.env.HOYMILES_PASSWORD || "",
     plantId: process.env.HOYMILES_PLANT_ID || "",
   }),
-  new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(5000)),
+  new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
   new GoogleSpreadsheetMonthlyReportRepository(
     {
       credentials: {
