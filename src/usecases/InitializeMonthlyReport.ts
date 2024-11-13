@@ -5,12 +5,7 @@ import { MonthlyReport } from "../MonthlyReport";
 import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../SoldSolarEnergy";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
-
-type BasePrices = {
-  offPeakHours: number;
-  peakHours: number;
-  solar: number;
-};
+import { BasePrices } from "./types";
 
 export class InitializeMonthlyReportCommand {
   constructor(
