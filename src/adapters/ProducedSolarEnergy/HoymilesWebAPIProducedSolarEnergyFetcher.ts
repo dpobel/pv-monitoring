@@ -26,6 +26,15 @@ export class FailToRetrieveProducedSolarEnergy extends Error {
   }
 }
 
+class FailureResponse extends Error {
+  constructor(
+    message: string,
+    public readonly data: unknown,
+  ) {
+    super(message);
+  }
+}
+
 export class HoymilesWebAPIProducedSolarEnergyFetcher
   implements ProducedSolarEnergyFetcher
 {
@@ -74,7 +83,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
         data: { token: string };
       };
       if (data.status !== "0") {
-        throw new Error(data.message);
+        throw new FailureResponse(data.message, data);
       }
 
       return data.data.token;
@@ -116,7 +125,7 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
         };
       };
       if (data.status !== "0") {
-        throw new Error(data.message);
+        throw new FailureResponse(data.message, data);
       }
       return new ProducedSolarEnergy(Number(data.data.total_pv_eq) * 1000);
     } catch (error) {
