@@ -14,7 +14,13 @@ export class InitializeMonthlyReportCommand {
   ) {}
 }
 
-export class InitializeMonthlyReport {
+export interface InitializeMonthlyReportInterface {
+  execute(command: InitializeMonthlyReportCommand): Promise<void>;
+}
+
+export class InitializeMonthlyReport
+  implements InitializeMonthlyReportInterface
+{
   constructor(
     private readonly monthlyReportRepository: MonthlyReportRepository,
   ) {}

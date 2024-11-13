@@ -9,10 +9,8 @@ import { GoogleSpreadsheetMonthlyReportRepository } from "./src/adapters/Monthly
 import { RowBuilder } from "./src/adapters/MonthlyReport/RowBuilder";
 import { HoymilesWebAPIProducedSolarEnergyFetcher } from "./src/adapters/ProducedSolarEnergy/HoymilesWebAPIProducedSolarEnergyFetcher";
 import { MemorySoldSolarEnergyFetcher } from "./src/adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
-import {
-  FillDailyReport,
-  FillDailyReportCommand,
-} from "./src/usecases/FillDailyReport";
+import { FillDailyReport } from "./src/usecases/FillDailyReport";
+import { FillYesterdayReportCli } from "./src/cli/FillYesterdayReport";
 
 const date = new Date();
 date.setDate(date.getDate() - 1);
@@ -21,31 +19,33 @@ const day = new Day(
   date.getDate(),
 );
 
-const service = new FillDailyReport(
-  new MemoryElectricityConsumptionFetcher(
-    new Map([
-      [day.minusAYear.name, new ElectricityConsumption(0, 0)],
-      [day.name, new ElectricityConsumption(0, 0)],
-    ]),
-  ),
-  new HoymilesWebAPIProducedSolarEnergyFetcher(
-    {
-      username: process.env.HOYMILES_USERNAME || "",
-      password: process.env.HOYMILES_PASSWORD || "",
-      plantId: process.env.HOYMILES_PLANT_ID || "",
-    },
-    new ConsoleLogger(),
-  ),
-  new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
-  new GoogleSpreadsheetMonthlyReportRepository(
-    {
-      credentials: {
-        clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
-        privateKey: process.env.GOOGLE_PRIVATE_KEY || "",
+const cli = new FillYesterdayReportCli(
+  new FillDailyReport(
+    new MemoryElectricityConsumptionFetcher(
+      new Map([
+        [day.minusAYear.name, new ElectricityConsumption(0, 0)],
+        [day.name, new ElectricityConsumption(0, 0)],
+      ]),
+    ),
+    new HoymilesWebAPIProducedSolarEnergyFetcher(
+      {
+        username: process.env.HOYMILES_USERNAME || "",
+        password: process.env.HOYMILES_PASSWORD || "",
+        plantId: process.env.HOYMILES_PLANT_ID || "",
       },
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || "",
-    },
-    new RowBuilder(),
+      new ConsoleLogger(),
+    ),
+    new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
+    new GoogleSpreadsheetMonthlyReportRepository(
+      {
+        credentials: {
+          clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
+          privateKey: process.env.GOOGLE_PRIVATE_KEY || "",
+        },
+        spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || "",
+      },
+      new RowBuilder(),
+    ),
   ),
 );
-await service.execute(new FillDailyReportCommand(day));
+await cli.run();
