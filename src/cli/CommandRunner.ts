@@ -31,7 +31,7 @@ export class CommandRunner {
     let cli: CliCommand;
     try {
       args = this.parseArguments(argv);
-      cli = this.findCli(args.command);
+      cli = this.findCliCommand(args.command);
     } catch (error) {
       this.logger.error(
         error instanceof Error ? error.message : JSON.stringify(error),
@@ -41,15 +41,15 @@ export class CommandRunner {
     return await cli.run(args.options);
   }
 
-  private findCli(name: string) {
-    const cli = this.clis.find((cli) => {
+  private findCliCommand(name: string) {
+    const cliCommand = this.clis.find((cli) => {
       return cli.name === name;
     });
 
-    if (!cli) {
+    if (!cliCommand) {
       throw new CommandNotFound(name);
     }
-    return cli;
+    return cliCommand;
   }
 
   private parseArguments(argv: string[]) {
