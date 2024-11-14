@@ -7,6 +7,7 @@
   "scripts": {
     "initialize-monthly-report": "tsx cli.ts initialize-monthly-report",
     "fill-yesterday-report": "tsx cli.ts fill-yesterday-report",
+    "fill-daily-report": "tsx cli.ts fill-daily-report",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
     "test": "jest"
