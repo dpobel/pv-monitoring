@@ -57,6 +57,7 @@ const fillDailyReportService = new FillDailyReport(
 export default {
   InitializeMonthlyReportCliCommand: new InitializeMonthlyReportCliCommand(
     new InitializeMonthlyReport(monthlyReportRepository),
+    logger,
   ),
   FillDailyReportCliCommand: new FillDailyReportCliCommand(
     fillDailyReportService,
