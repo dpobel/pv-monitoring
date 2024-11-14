@@ -1,4 +1,5 @@
 import { Month } from "../Month";
+import { NullLogger } from "../adapters/Logger/NullLogger";
 import {
   InitializeMonthlyReportCommand,
   InitializeMonthlyReportInterface,
@@ -27,12 +28,12 @@ describe("InitializeMonthlyReportCliCommand", () => {
 
     beforeEach(() => {
       service = new MockInitializeMonthlyReportService();
-      sut = new InitializeMonthlyReportCliCommand(service);
+      sut = new InitializeMonthlyReportCliCommand(service, new NullLogger());
     });
 
     it("should run the command for the current month", async () => {
       const today = new Date();
-      const exitCode = await sut.run();
+      const exitCode = await sut.run({});
       expect(service.executed).toBe(true);
       expect(service.month).toEqual(
         new Month(today.getMonth() + 1, today.getFullYear()),
@@ -43,6 +44,30 @@ describe("InitializeMonthlyReportCliCommand", () => {
         solar: 0.1276,
       });
       expect(exitCode).toEqual(0);
+    });
+
+    it("should run the command for the given month", async () => {
+      const exitCode = await sut.run({ month: "2024-12" });
+      expect(service.executed).toBe(true);
+      expect(service.month).toEqual(new Month(12, 2024));
+      expect(service.prices).toEqual({
+        offPeakHours: 0.204,
+        peakHours: 0.2672,
+        solar: 0.1276,
+      });
+      expect(exitCode).toEqual(0);
+    });
+
+    it("should reject when the month is malformed", async () => {
+      const exitCode = await sut.run({ month: "whatever" });
+      expect(service.executed).toBe(false);
+      expect(exitCode).toEqual(99);
+    });
+
+    it("should reject when the month is wrong type", async () => {
+      const exitCode = await sut.run({ month: 2024 });
+      expect(service.executed).toBe(false);
+      expect(exitCode).toEqual(99);
     });
   });
 });
