@@ -65,5 +65,6 @@ export default {
   ),
   FillYesterdayReportCliCommand: new FillYesterdayReportCliCommand(
     fillDailyReportService,
+    logger,
   ),
 };

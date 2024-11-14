@@ -14,10 +14,15 @@ class MockInitializeMonthlyReportService
   public month: Month | null = null;
   public prices: BasePrices | null = null;
 
+  public shouldThrow = false;
+
   async execute(command: InitializeMonthlyReportCommand) {
     this.executed = true;
     this.month = command.month;
     this.prices = command.prices;
+    if (this.shouldThrow) {
+      throw new Error("boom");
+    }
   }
 }
 
@@ -68,6 +73,12 @@ describe("InitializeMonthlyReportCliCommand", () => {
       const exitCode = await sut.run({ month: 2024 });
       expect(service.executed).toBe(false);
       expect(exitCode).toEqual(99);
+    });
+
+    it("should handle errors", async () => {
+      service.shouldThrow = true;
+      const exitCode = await sut.run({});
+      expect(exitCode).toEqual(98);
     });
   });
 });

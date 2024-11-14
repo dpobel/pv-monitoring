@@ -1,3 +1,4 @@
+import { Logger } from "../adapters/Logger/Logger";
 import { Day } from "../Day";
 import { Month } from "../Month";
 import {
@@ -9,7 +10,10 @@ import { CliCommand } from "./CliCommand";
 export class FillYesterdayReportCliCommand implements CliCommand {
   readonly name = "fill-yesterday-report";
 
-  constructor(private readonly service: FillDailyReportInterface) {}
+  constructor(
+    private readonly service: FillDailyReportInterface,
+    private readonly logger: Logger,
+  ) {}
 
   async run() {
     const date = new Date();
@@ -19,7 +23,14 @@ export class FillYesterdayReportCliCommand implements CliCommand {
       date.getDate(),
     );
 
-    await this.service.execute(new FillDailyReportCommand(day));
-    return 0;
+    try {
+      await this.service.execute(new FillDailyReportCommand(day));
+      return 0;
+    } catch (error) {
+      this.logger.error(
+        error instanceof Error ? error.message : JSON.stringify(error),
+      );
+      return 102;
+    }
   }
 }

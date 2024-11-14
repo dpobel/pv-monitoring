@@ -31,7 +31,14 @@ export class FillDailyReportCliCommand implements CliCommand {
       date.getDate(),
     );
 
-    await this.service.execute(new FillDailyReportCommand(day));
-    return 0;
+    try {
+      await this.service.execute(new FillDailyReportCommand(day));
+      return 0;
+    } catch (error) {
+      this.logger.error(
+        error instanceof Error ? error.message : JSON.stringify(error),
+      );
+      return 101;
+    }
   }
 }

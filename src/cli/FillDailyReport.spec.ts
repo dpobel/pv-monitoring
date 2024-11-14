@@ -11,9 +11,14 @@ class MockFillDailyReportService implements FillDailyReportInterface {
   public executed = false;
   public day: Day | null = null;
 
+  public shouldThrow = false;
+
   async execute(command: FillDailyReportCommand) {
     this.executed = true;
     this.day = command.day;
+    if (this.shouldThrow) {
+      throw new Error("boom");
+    }
   }
 }
 
@@ -44,6 +49,13 @@ describe("FillDailyReportCliCommand", () => {
       expect(service.executed).toBe(true);
       expect(service.day).toEqual(new Day(new Month(11, 2024), 14));
       expect(exitCode).toEqual(0);
+    });
+
+    it("should handle errors", async () => {
+      service.shouldThrow = true;
+
+      const exitCode = await sut.run({ date: "2024-11-14" });
+      expect(exitCode).toEqual(101);
     });
   });
 });

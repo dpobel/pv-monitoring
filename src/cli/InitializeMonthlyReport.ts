@@ -24,14 +24,21 @@ export class InitializeMonthlyReportCliCommand implements CliCommand {
     }
     const month = this.getMonth(monthString);
 
-    await this.service.execute(
-      new InitializeMonthlyReportCommand(month, {
-        offPeakHours: 0.204,
-        peakHours: 0.2672,
-        solar: 0.1276,
-      }),
-    );
-    return 0;
+    try {
+      await this.service.execute(
+        new InitializeMonthlyReportCommand(month, {
+          offPeakHours: 0.204,
+          peakHours: 0.2672,
+          solar: 0.1276,
+        }),
+      );
+      return 0;
+    } catch (error) {
+      this.logger.error(
+        error instanceof Error ? error.message : JSON.stringify(error),
+      );
+      return 98;
+    }
   }
 
   private getMonth(monthString: string) {
