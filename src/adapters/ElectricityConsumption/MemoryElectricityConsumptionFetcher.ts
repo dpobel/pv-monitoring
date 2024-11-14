@@ -10,7 +10,9 @@ export class MemoryElectricityConsumptionFetcher {
   ) {}
 
   async fetch(day: Day): Promise<ElectricityConsumption> {
-    // biome-ignore lint/style/noNonNullAssertion: test code
+    if (!this.electricityConsumptionMap.has(day.name)) {
+      return new ElectricityConsumption(0, 0);
+    }
     return this.electricityConsumptionMap.get(day.name)!;
   }
 }
