@@ -9,7 +9,11 @@ export class FillDailyReportCommand {
   constructor(public readonly day: Day) {}
 }
 
-export class FillDailyReport {
+export interface FillDailyReportInterface {
+  execute(command: FillDailyReportCommand): Promise<void>;
+}
+
+export class FillDailyReport implements FillDailyReportInterface {
   constructor(
     private readonly electricityConsumptionFetcher: ElectricityConsumptionFetcher,
     private readonly producedSolarEnergyFetcher: ProducedSolarEnergyFetcher,

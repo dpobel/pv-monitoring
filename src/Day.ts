@@ -11,7 +11,10 @@ export class Day {
   }
 
   get YYYYMMDD() {
-    return `${this.month.year}-${this.month.month}-${this.day}`;
+    return `${this.month.year}-${String(this.month.month).padStart(
+      2,
+      "0",
+    )}-${String(this.day).padStart(2, "0")}`;
   }
 
   get minusAYear() {

@@ -5,8 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "initialize-monthly-report": "tsx initialize-monthly-report.ts",
-    "fill-yesterday-report": "tsx fill-yesterday-report.ts",
+    "initialize-monthly-report": "tsx cli.ts initialize-monthly-report",
+    "fill-yesterday-report": "tsx cli.ts fill-yesterday-report",
+    "fill-daily-report": "tsx cli.ts fill-daily-report",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
     "test": "jest"
@@ -26,11 +27,13 @@
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.14.2",
     "google-spreadsheet": "^4.1.4",
+    "minimist": "^1.2.8",
     "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/jest": "^29.5.14",
+    "@types/minimist": "^1.2.5",
     "jest": "^29.7.0",
     "nock": "^14.0.0-beta.15",
     "ts-jest": "^29.2.5",
