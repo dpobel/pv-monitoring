@@ -9,6 +9,8 @@ import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyRepo
 import { RowBuilder } from "./adapters/MonthlyReport/RowBuilder";
 import { HoymilesWebAPIProducedSolarEnergyFetcher } from "./adapters/ProducedSolarEnergy/HoymilesWebAPIProducedSolarEnergyFetcher";
 import { MemorySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
+import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
+import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
 import { FillDailyReport } from "./usecases/FillDailyReport";
 import { InitializeMonthlyReport } from "./usecases/InitializeMonthlyReport";
 
@@ -31,23 +33,27 @@ const monthlyReportRepository = new GoogleSpreadsheetMonthlyReportRepository(
 );
 
 export default {
-  InitializeMonthlyReport: new InitializeMonthlyReport(monthlyReportRepository),
-  FillDailyReport: new FillDailyReport(
-    new MemoryElectricityConsumptionFetcher(
-      new Map([
-        [day.minusAYear.name, new ElectricityConsumption(0, 0)],
-        [day.name, new ElectricityConsumption(0, 0)],
-      ]),
+  InitializeMonthlyReportCliCommand: new InitializeMonthlyReportCliCommand(
+    new InitializeMonthlyReport(monthlyReportRepository),
+  ),
+  FillDailyReportCliCommand: new FillYesterdayReportCliCommand(
+    new FillDailyReport(
+      new MemoryElectricityConsumptionFetcher(
+        new Map([
+          [day.minusAYear.name, new ElectricityConsumption(0, 0)],
+          [day.name, new ElectricityConsumption(0, 0)],
+        ]),
+      ),
+      new HoymilesWebAPIProducedSolarEnergyFetcher(
+        {
+          username: process.env.HOYMILES_USERNAME || "",
+          password: process.env.HOYMILES_PASSWORD || "",
+          plantId: process.env.HOYMILES_PLANT_ID || "",
+        },
+        new ConsoleLogger(),
+      ),
+      new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
+      monthlyReportRepository,
     ),
-    new HoymilesWebAPIProducedSolarEnergyFetcher(
-      {
-        username: process.env.HOYMILES_USERNAME || "",
-        password: process.env.HOYMILES_PASSWORD || "",
-        plantId: process.env.HOYMILES_PLANT_ID || "",
-      },
-      new ConsoleLogger(),
-    ),
-    new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
-    monthlyReportRepository,
   ),
 };

@@ -4,8 +4,11 @@ import {
   FillDailyReportCommand,
   FillDailyReportInterface,
 } from "../usecases/FillDailyReport";
+import { CliCommand } from "./CliCommand";
 
-export class FillYesterdayReportCli {
+export class FillYesterdayReportCliCommand implements CliCommand {
+  readonly name = "fill-yesterday-report";
+
   constructor(private readonly service: FillDailyReportInterface) {}
 
   async run() {
@@ -17,5 +20,6 @@ export class FillYesterdayReportCli {
     );
 
     await this.service.execute(new FillDailyReportCommand(day));
+    return 0;
   }
 }
