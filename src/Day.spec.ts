@@ -18,4 +18,11 @@ describe("Day", () => {
     const day2 = new Day(new Month(2, 2024), 1);
     expect(day2.YYYYMMDD).toEqual("2024-02-01");
   });
+
+  describe("minusAYear", () => {
+    it("should return the day of the previous year", () => {
+      const day = new Day(new Month(11, 2024), 3);
+      expect(day.minusAYear).toEqual(new Day(new Month(11, 2023), 3));
+    });
+  });
 });
