@@ -1,4 +1,3 @@
-import { ConsoleLogger } from "./src/adapters/Logger/ConsoleLogger";
 import { CommandRunner } from "./src/cli/CommandRunner";
 import di from "./src/di";
 
@@ -8,6 +7,6 @@ const commandRunner = new CommandRunner(
     di.FillDailyReportCliCommand,
     di.FillYesterdayReportCliCommand,
   ],
-  new ConsoleLogger(),
+  di.ConsoleLogger,
 );
 process.exitCode = await commandRunner.run(process.argv);
