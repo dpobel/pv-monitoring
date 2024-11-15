@@ -1,6 +1,13 @@
 import { Month } from "./Month";
 
 describe("Month", () => {
+  describe("reportName", () => {
+    it("should build a human readable report name", () => {
+      const month = new Month(1, 2024);
+      expect(month.reportName).toEqual("Relevé 01/2024");
+    });
+  });
+
   describe("name", () => {
     it("should build a human readable name", () => {
       const month1 = new Month(11, 2024);
@@ -132,6 +139,13 @@ describe("Month", () => {
         "28/02/2024",
         "29/02/2024",
       ]);
+    });
+  });
+
+  describe("minusAYear", () => {
+    it("should return the month of the previous year", () => {
+      const month = new Month(11, 2024);
+      expect(month.minusAYear).toEqual(new Month(11, 2023));
     });
   });
 });
