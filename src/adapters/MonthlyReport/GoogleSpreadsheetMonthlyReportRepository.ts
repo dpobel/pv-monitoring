@@ -97,11 +97,17 @@ export class GoogleSpreadsheetMonthlyReportRepository
     if (doc.sheetsByTitle[report.name]) {
       throw new MonthlyReportAlreadyExists(report);
     }
+    const orange = {
+      red: 1,
+      green: 0.5,
+      blue: 0,
+    };
     const sheet = await doc.addSheet({
       title: report.name,
       index: 0,
       headerValues: this.rowBuilder.getHeaders(),
       headerRowIndex: HEADER_ROW_INDEX,
+      tabColor: orange,
     });
 
     const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
