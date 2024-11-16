@@ -112,6 +112,8 @@ export class GoogleSpreadsheetMonthlyReportRepository
 
     const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
 
+    await this.setHeaderRowStyle(sheet);
+
     let rowIndex = HEADER_ROW_INDEX + 1;
     for (const dailyReport of report.dailyReports) {
       await sheet.addRow(
@@ -120,6 +122,20 @@ export class GoogleSpreadsheetMonthlyReportRepository
       rowIndex++;
     }
     await this.addTotalRow(sheet, report, HEADER_ROW_INDEX + 1);
+  }
+
+  private async setHeaderRowStyle(sheet: GoogleSpreadsheetWorksheet) {
+    const endColumnIndex = this.rowBuilder.getHeaders().length - 1;
+    await sheet.loadCells({
+      startRowIndex: HEADER_ROW_INDEX - 1,
+      endRowIndex: HEADER_ROW_INDEX,
+    });
+    for (let columIndex = 0; columIndex <= endColumnIndex; columIndex++) {
+      const cell = sheet.getCell(HEADER_ROW_INDEX - 1, columIndex);
+      cell.textFormat = { bold: true };
+      cell.backgroundColor = LABEL_BACKGROUND;
+    }
+    await sheet.saveUpdatedCells();
   }
 
   private async findRow(dailyReport: DailyReport) {
