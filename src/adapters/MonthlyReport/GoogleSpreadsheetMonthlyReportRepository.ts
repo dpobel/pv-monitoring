@@ -50,8 +50,10 @@ class MisconfiguredGoogleSpreadsheet extends Error {
 
 const HEADER_ROW_INDEX = 3;
 
+const ORANGE = { red: 1, green: 0.5, blue: 0 };
 const LIGHT_BLUE = { red: 0.68, green: 0.84, blue: 0.95 };
 const LABEL_BACKGROUND = LIGHT_BLUE;
+const TAB_COLOR = ORANGE;
 
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
@@ -100,17 +102,12 @@ export class GoogleSpreadsheetMonthlyReportRepository
     if (doc.sheetsByTitle[report.name]) {
       throw new MonthlyReportAlreadyExists(report);
     }
-    const orange = {
-      red: 1,
-      green: 0.5,
-      blue: 0,
-    };
     const sheet = await doc.addSheet({
       title: report.name,
       index: 0,
       headerValues: this.rowBuilder.getHeaders(),
       headerRowIndex: HEADER_ROW_INDEX,
-      tabColor: orange,
+      tabColor: TAB_COLOR,
     });
 
     const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
