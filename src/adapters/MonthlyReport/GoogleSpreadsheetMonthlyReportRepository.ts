@@ -50,6 +50,9 @@ class MisconfiguredGoogleSpreadsheet extends Error {
 
 const HEADER_ROW_INDEX = 3;
 
+const LIGHT_BLUE = { red: 0.68, green: 0.84, blue: 0.95 };
+const LABEL_BACKGROUND = LIGHT_BLUE;
+
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
 {
@@ -154,18 +157,27 @@ export class GoogleSpreadsheetMonthlyReportRepository
     sheet: GoogleSpreadsheetWorksheet,
     basePrices: BasePrices,
   ) {
+    const fillLabelCell = (a1: string, label: string) => {
+      const cell = sheet.getCellByA1(a1);
+      cell.backgroundColor = LABEL_BACKGROUND;
+      cell.textFormat = {
+        bold: true,
+      };
+      cell.value = label;
+    };
+    const fillValueCell = (a1: string, value: number) => {
+      const cell = sheet.getCellByA1(a1);
+      cell.numberValue = value;
+    };
+
     const basePricesA1Mapping = this.getBasePricesA1Mapping();
     await sheet.loadCells(Object.values(basePricesA1Mapping));
-    sheet.getCellByA1(basePricesA1Mapping.offPeakHoursLabel).value =
-      "Prix HC/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.offPeakHours).numberValue =
-      basePrices.offPeakHours;
-    sheet.getCellByA1(basePricesA1Mapping.peakHoursLabel).value = "Prix HP/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.peakHours).numberValue =
-      basePrices.peakHours;
-    sheet.getCellByA1(basePricesA1Mapping.solarLabel).value =
-      "Prix revente/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.solar).numberValue = basePrices.solar;
+    fillLabelCell(basePricesA1Mapping.offPeakHoursLabel, "Prix HC/kwh");
+    fillValueCell(basePricesA1Mapping.offPeakHours, basePrices.offPeakHours);
+    fillLabelCell(basePricesA1Mapping.peakHoursLabel, "Prix HP/kwh");
+    fillValueCell(basePricesA1Mapping.peakHours, basePrices.peakHours);
+    fillLabelCell(basePricesA1Mapping.solarLabel, "Prix revente/kwh");
+    fillValueCell(basePricesA1Mapping.solar, basePrices.solar);
     await sheet.saveUpdatedCells();
 
     return basePricesA1Mapping;
