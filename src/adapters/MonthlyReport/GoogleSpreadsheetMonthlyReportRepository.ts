@@ -52,8 +52,10 @@ const HEADER_ROW_INDEX = 3;
 
 const ORANGE = { red: 1, green: 0.5, blue: 0 };
 const LIGHT_BLUE = { red: 0.68, green: 0.84, blue: 0.95 };
+const LIGHT_YELLOW = { red: 252 / 255, green: 243 / 255, blue: 207 / 255 };
 const LABEL_BACKGROUND = LIGHT_BLUE;
 const TAB_COLOR = ORANGE;
+const FILLED_DAY_BACKGROUND = LIGHT_YELLOW;
 
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
@@ -138,14 +140,20 @@ export class GoogleSpreadsheetMonthlyReportRepository
     await sheet.saveUpdatedCells();
   }
 
-  private async findRow(dailyReport: DailyReport) {
+  private async loadSheet(dailyReport: DailyReport) {
     const doc = await this.loadDocument();
     const reportName = dailyReport.reportName;
 
     if (!doc.sheetsByTitle[reportName]) {
       throw new MonthlyReportNotFound(reportName);
     }
-    const sheet = doc.sheetsByTitle[reportName];
+    return doc.sheetsByTitle[reportName];
+  }
+
+  private async findRow(
+    sheet: GoogleSpreadsheetWorksheet,
+    dailyReport: DailyReport,
+  ) {
     await sheet.loadHeaderRow(HEADER_ROW_INDEX);
     const rows = await sheet.getRows();
 
@@ -155,7 +163,8 @@ export class GoogleSpreadsheetMonthlyReportRepository
   }
 
   async store(dailyReport: DailyReport): Promise<void> {
-    const row = await this.findRow(dailyReport);
+    const sheet = await this.loadSheet(dailyReport);
+    const row = await this.findRow(sheet, dailyReport);
     if (!row) {
       throw new DailyReportRowNotFound(dailyReport);
     }
@@ -164,6 +173,9 @@ export class GoogleSpreadsheetMonthlyReportRepository
       this.rowBuilder.buildRow(dailyReport, row.rowNumber, basePricesA1Mapping),
     );
     await row.save();
+    await sheet.loadCells({ startRowIndex: row.rowNumber - 1 });
+    sheet.getCell(row.rowNumber - 1, 0).backgroundColor = FILLED_DAY_BACKGROUND;
+    await sheet.saveUpdatedCells();
   }
 
   private async addBasePrices(
