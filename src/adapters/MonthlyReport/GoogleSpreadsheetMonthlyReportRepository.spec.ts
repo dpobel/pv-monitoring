@@ -58,10 +58,10 @@ describe("GoogleSpreadsheetReportRepository", () => {
       await sut.store(
         new DailyReport(
           new Day(month, 2),
-          new ElectricityConsumption(2, 9),
-          new ElectricityConsumption(3, 4),
-          new ProducedSolarEnergy(13),
-          new SoldSolarEnergy(17),
+          new ElectricityConsumption(2222, 9999),
+          new ElectricityConsumption(3333, 4444),
+          new ProducedSolarEnergy(1313),
+          new SoldSolarEnergy(1717),
         ),
       );
       doc.resetLocalCache();
@@ -78,11 +78,11 @@ describe("GoogleSpreadsheetReportRepository", () => {
       );
       expect(lines[3].trim()).toEqual("01/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0");
       expect(lines[4].trim()).toEqual(
-        '02/11/2024,2,9,11,"0,002",3,4,7,"0,0011",-36%,13,17,"0,0051"',
+        '02/11/2024,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1313,1717,"0,52"',
       );
       expect(lines[5].trim()).toEqual("03/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0");
       expect(lines[6].trim()).toEqual(
-        'Total,2,9,11,"0,002",3,4,7,"0,0011",-36%,13,17,"0,0051"',
+        'Total,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1313,1717,"0,52"',
       );
     }, 20000);
   });
@@ -93,15 +93,15 @@ describe("GoogleSpreadsheetReportRepository", () => {
       const dailyReports = [
         new DailyReport(
           new Day(month, 1),
-          new ElectricityConsumption(2, 9),
-          new ElectricityConsumption(3, 4),
-          new ProducedSolarEnergy(13),
-          new SoldSolarEnergy(17),
+          new ElectricityConsumption(2372, 9700),
+          new ElectricityConsumption(3020, 4230),
+          new ProducedSolarEnergy(8289),
+          new SoldSolarEnergy(7289),
         ),
         new DailyReport(
           new Day(month, 2),
-          new ElectricityConsumption(10, 10),
-          new ElectricityConsumption(10, 10),
+          new ElectricityConsumption(10000, 10000),
+          new ElectricityConsumption(10000, 10000),
           new ProducedSolarEnergy(0),
           new SoldSolarEnergy(0),
         ),
@@ -126,13 +126,13 @@ describe("GoogleSpreadsheetReportRepository", () => {
         "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Production PV,Qté vendue,Gain vente",
       );
       expect(lines[3].trim()).toEqual(
-        '01/11/2024,2,9,11,"0,002",3,4,7,"0,0011",-36%,13,17,"0,0051"',
+        '01/11/2024,2372,9700,12072,"2,18",3020,4230,7250,"1,15",-40%,8289,7289,"2,19"',
       );
       expect(lines[4].trim()).toEqual(
-        '02/11/2024,10,10,20,"0,003",10,10,20,"0,003",0%,0,0,0',
+        "02/11/2024,10000,10000,20000,3,10000,10000,20000,3,0%,0,0,0",
       );
       expect(lines[5].trim()).toEqual(
-        'Total,12,19,31,"0,005",13,14,27,"0,0041",-13%,13,17,"0,0051"',
+        'Total,12372,19700,32072,"5,18",13020,14230,27250,"4,15",-15%,8289,7289,"2,19"',
       );
     }, 20000);
   });
