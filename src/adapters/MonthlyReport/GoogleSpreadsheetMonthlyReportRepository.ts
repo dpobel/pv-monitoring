@@ -199,8 +199,25 @@ export class GoogleSpreadsheetMonthlyReportRepository
     report: MonthlyReport,
     firstRowValueIndex: number,
   ) {
-    await sheet.addRow(
-      this.rowBuilder.buildTotalRow(report, firstRowValueIndex),
+    const totalRowData = this.rowBuilder.buildTotalRow(
+      report,
+      firstRowValueIndex,
     );
+    const row = await sheet.addRow(totalRowData);
+    await sheet.loadCells(row.a1Range);
+    for (
+      let columnIndex = 0;
+      columnIndex < Object.keys(totalRowData).length;
+      columnIndex++
+    ) {
+      const cell = sheet.getCell(row.rowNumber - 1, columnIndex);
+      if (columnIndex === 0) {
+        cell.backgroundColor = LABEL_BACKGROUND;
+      }
+      cell.textFormat = {
+        bold: true,
+      };
+    }
+    await sheet.saveUpdatedCells();
   }
 }
