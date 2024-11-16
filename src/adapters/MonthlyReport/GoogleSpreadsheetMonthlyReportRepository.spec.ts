@@ -84,7 +84,7 @@ describe("GoogleSpreadsheetReportRepository", () => {
       expect(lines[6].trim()).toEqual(
         'Total,2,9,11,"0,002",3,4,7,"0,0011",-36%,13,17,"0,0051"',
       );
-    });
+    }, 20000);
   });
 
   describe("create", () => {

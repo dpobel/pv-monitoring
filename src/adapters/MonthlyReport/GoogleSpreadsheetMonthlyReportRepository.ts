@@ -50,6 +50,13 @@ class MisconfiguredGoogleSpreadsheet extends Error {
 
 const HEADER_ROW_INDEX = 3;
 
+const ORANGE = { red: 1, green: 0.5, blue: 0 };
+const LIGHT_BLUE = { red: 0.68, green: 0.84, blue: 0.95 };
+const LIGHT_YELLOW = { red: 252 / 255, green: 243 / 255, blue: 207 / 255 };
+const LABEL_BACKGROUND = LIGHT_BLUE;
+const TAB_COLOR = ORANGE;
+const FILLED_DAY_BACKGROUND = LIGHT_YELLOW;
+
 export class GoogleSpreadsheetMonthlyReportRepository
   implements MonthlyReportRepository
 {
@@ -102,9 +109,12 @@ export class GoogleSpreadsheetMonthlyReportRepository
       index: 0,
       headerValues: this.rowBuilder.getHeaders(),
       headerRowIndex: HEADER_ROW_INDEX,
+      tabColor: TAB_COLOR,
     });
 
     const basePricesA1Mapping = await this.addBasePrices(sheet, basePrices);
+
+    await this.setHeaderRowStyle(sheet);
 
     let rowIndex = HEADER_ROW_INDEX + 1;
     for (const dailyReport of report.dailyReports) {
@@ -116,14 +126,34 @@ export class GoogleSpreadsheetMonthlyReportRepository
     await this.addTotalRow(sheet, report, HEADER_ROW_INDEX + 1);
   }
 
-  private async findRow(dailyReport: DailyReport) {
+  private async setHeaderRowStyle(sheet: GoogleSpreadsheetWorksheet) {
+    const endColumnIndex = this.rowBuilder.getHeaders().length - 1;
+    await sheet.loadCells({
+      startRowIndex: HEADER_ROW_INDEX - 1,
+      endRowIndex: HEADER_ROW_INDEX,
+    });
+    for (let columIndex = 0; columIndex <= endColumnIndex; columIndex++) {
+      const cell = sheet.getCell(HEADER_ROW_INDEX - 1, columIndex);
+      cell.textFormat = { bold: true };
+      cell.backgroundColor = LABEL_BACKGROUND;
+    }
+    await sheet.saveUpdatedCells();
+  }
+
+  private async loadSheet(dailyReport: DailyReport) {
     const doc = await this.loadDocument();
     const reportName = dailyReport.reportName;
 
     if (!doc.sheetsByTitle[reportName]) {
       throw new MonthlyReportNotFound(reportName);
     }
-    const sheet = doc.sheetsByTitle[reportName];
+    return doc.sheetsByTitle[reportName];
+  }
+
+  private async findRow(
+    sheet: GoogleSpreadsheetWorksheet,
+    dailyReport: DailyReport,
+  ) {
     await sheet.loadHeaderRow(HEADER_ROW_INDEX);
     const rows = await sheet.getRows();
 
@@ -133,7 +163,8 @@ export class GoogleSpreadsheetMonthlyReportRepository
   }
 
   async store(dailyReport: DailyReport): Promise<void> {
-    const row = await this.findRow(dailyReport);
+    const sheet = await this.loadSheet(dailyReport);
+    const row = await this.findRow(sheet, dailyReport);
     if (!row) {
       throw new DailyReportRowNotFound(dailyReport);
     }
@@ -142,24 +173,36 @@ export class GoogleSpreadsheetMonthlyReportRepository
       this.rowBuilder.buildRow(dailyReport, row.rowNumber, basePricesA1Mapping),
     );
     await row.save();
+    await sheet.loadCells({ startRowIndex: row.rowNumber - 1 });
+    sheet.getCell(row.rowNumber - 1, 0).backgroundColor = FILLED_DAY_BACKGROUND;
+    await sheet.saveUpdatedCells();
   }
 
   private async addBasePrices(
     sheet: GoogleSpreadsheetWorksheet,
     basePrices: BasePrices,
   ) {
+    const fillLabelCell = (a1: string, label: string) => {
+      const cell = sheet.getCellByA1(a1);
+      cell.backgroundColor = LABEL_BACKGROUND;
+      cell.textFormat = {
+        bold: true,
+      };
+      cell.value = label;
+    };
+    const fillValueCell = (a1: string, value: number) => {
+      const cell = sheet.getCellByA1(a1);
+      cell.numberValue = value;
+    };
+
     const basePricesA1Mapping = this.getBasePricesA1Mapping();
     await sheet.loadCells(Object.values(basePricesA1Mapping));
-    sheet.getCellByA1(basePricesA1Mapping.offPeakHoursLabel).value =
-      "Prix HC/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.offPeakHours).numberValue =
-      basePrices.offPeakHours;
-    sheet.getCellByA1(basePricesA1Mapping.peakHoursLabel).value = "Prix HP/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.peakHours).numberValue =
-      basePrices.peakHours;
-    sheet.getCellByA1(basePricesA1Mapping.solarLabel).value =
-      "Prix revente/kwh";
-    sheet.getCellByA1(basePricesA1Mapping.solar).numberValue = basePrices.solar;
+    fillLabelCell(basePricesA1Mapping.offPeakHoursLabel, "Prix HC/kwh");
+    fillValueCell(basePricesA1Mapping.offPeakHours, basePrices.offPeakHours);
+    fillLabelCell(basePricesA1Mapping.peakHoursLabel, "Prix HP/kwh");
+    fillValueCell(basePricesA1Mapping.peakHours, basePrices.peakHours);
+    fillLabelCell(basePricesA1Mapping.solarLabel, "Prix revente/kwh");
+    fillValueCell(basePricesA1Mapping.solar, basePrices.solar);
     await sheet.saveUpdatedCells();
 
     return basePricesA1Mapping;
@@ -181,8 +224,25 @@ export class GoogleSpreadsheetMonthlyReportRepository
     report: MonthlyReport,
     firstRowValueIndex: number,
   ) {
-    await sheet.addRow(
-      this.rowBuilder.buildTotalRow(report, firstRowValueIndex),
+    const totalRowData = this.rowBuilder.buildTotalRow(
+      report,
+      firstRowValueIndex,
     );
+    const row = await sheet.addRow(totalRowData);
+    await sheet.loadCells(row.a1Range);
+    for (
+      let columnIndex = 0;
+      columnIndex < Object.keys(totalRowData).length;
+      columnIndex++
+    ) {
+      const cell = sheet.getCell(row.rowNumber - 1, columnIndex);
+      if (columnIndex === 0) {
+        cell.backgroundColor = LABEL_BACKGROUND;
+      }
+      cell.textFormat = {
+        bold: true,
+      };
+    }
+    await sheet.saveUpdatedCells();
   }
 }
