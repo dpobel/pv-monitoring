@@ -1,6 +1,7 @@
 name: Initialize Monthly Report
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "23 1 1 * *"
 
@@ -9,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HOYMILES_PLANT_ID: ${{ vars.HOYMILES_PLANT_ID }}
-      HOYMILES_USERNAME: ${{ vars.HOYMILES_USERNAME }}
-      HOYMILES_PASSWORD: ${{ vars.HOYMILES_PASSWORD }}
+      HOYMILES_USERNAME: ${{ secret.HOYMILES_USERNAME }}
+      HOYMILES_PASSWORD: ${{ secret.HOYMILES_PASSWORD }}
       GOOGLE_SPREADSHEET_ID: ${{ vars.GOOGLE_SPREADSHEET_ID }}
       GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
       GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
