@@ -29,4 +29,21 @@ describe("Day", () => {
       assert.deepEqual(day.minusAYear, new Day(new Month(11, 2023), 3));
     });
   });
+
+  describe("tomorrow", () => {
+    it("should return the previous day", () => {
+      const day = new Day(new Month(11, 2024), 12);
+      assert.deepEqual(day.tomorrow, new Day(new Month(11, 2024), 13));
+    });
+
+    it("should handle the end of the month", () => {
+      const day = new Day(new Month(11, 2024), 30);
+      assert.deepEqual(day.tomorrow, new Day(new Month(12, 2024), 1));
+    });
+
+    it("should handle the end of the year", () => {
+      const day = new Day(new Month(12, 2024), 31);
+      assert.deepEqual(day.tomorrow, new Day(new Month(1, 2025), 1));
+    });
+  });
 });

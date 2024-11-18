@@ -17,8 +17,23 @@ export class Day {
     )}-${String(this.day).padStart(2, "0")}`;
   }
 
+  private get isLastOfMonth() {
+    return this.day === this.month.dayNumber;
+  }
+
+  get tomorrow() {
+    if (this.isLastOfMonth) {
+      return new Day(this.month.next, 1);
+    }
+    return new Day(this.month, this.day + 1);
+  }
+
   get minusAYear() {
     // TODO leap year ?
     return new Day(this.month.minusAYear, this.day);
+  }
+
+  toString() {
+    return this.name;
   }
 }

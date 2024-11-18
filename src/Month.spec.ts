@@ -153,4 +153,25 @@ describe("Month", () => {
       assert.deepEqual(month.minusAYear, new Month(11, 2023));
     });
   });
+
+  describe("next", () => {
+    it("should return the next month", () => {
+      const march = new Month(3, 2024);
+      assert.deepEqual(march.next, new Month(4, 2024));
+
+      const december = new Month(12, 2024);
+      assert.deepEqual(december.next, new Month(1, 2025));
+    });
+  });
+
+  describe("dayNumber", () => {
+    it("should return the number of day", () => {
+      const february = new Month(2, 2024);
+      assert.deepEqual(february.dayNumber, 29);
+      const march = new Month(3, 2024);
+      assert.deepEqual(march.dayNumber, 31);
+      const april = new Month(4, 2024);
+      assert.deepEqual(april.dayNumber, 30);
+    });
+  });
 });
