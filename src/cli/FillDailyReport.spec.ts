@@ -1,3 +1,5 @@
+import assert from "node:assert";
+import { beforeEach, describe, it } from "node:test";
 import { Day } from "../Day";
 import { Month } from "../Month";
 import { NullLogger } from "../adapters/Logger/NullLogger";
@@ -34,28 +36,28 @@ describe("FillDailyReportCliCommand", () => {
 
     it("should reject options without date", async () => {
       const exitCode = await sut.run({});
-      expect(service.executed).toBe(false);
-      expect(exitCode).toEqual(100);
+      assert.equal(service.executed, false);
+      assert.equal(exitCode, 100);
     });
 
     it("should reject options with an invalid date", async () => {
       const exitCode = await sut.run({ date: "2024" });
-      expect(service.executed).toBe(false);
-      expect(exitCode).toEqual(100);
+      assert.equal(service.executed, false);
+      assert.equal(exitCode, 100);
     });
 
     it("should run the command for a valid date", async () => {
       const exitCode = await sut.run({ date: "2024-11-14" });
-      expect(service.executed).toBe(true);
-      expect(service.day).toEqual(new Day(new Month(11, 2024), 14));
-      expect(exitCode).toEqual(0);
+      assert.ok(service.executed);
+      assert.deepEqual(service.day, new Day(new Month(11, 2024), 14));
+      assert.equal(exitCode, 0);
     });
 
     it("should handle errors", async () => {
       service.shouldThrow = true;
 
       const exitCode = await sut.run({ date: "2024-11-14" });
-      expect(exitCode).toEqual(101);
+      assert.equal(exitCode, 101);
     });
   });
 });

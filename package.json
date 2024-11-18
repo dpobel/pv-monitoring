@@ -10,7 +10,7 @@
     "fill-daily-report": "tsx cli.ts fill-daily-report",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "test": "jest"
+    "test": "node --import tsx --import dotenv/config --test 'src/**/*spec.ts'"
   },
   "type": "module",
   "repository": {
@@ -32,11 +32,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/jest": "^29.5.14",
     "@types/minimist": "^1.2.5",
-    "jest": "^29.7.0",
+    "@types/node": "^22.9.0",
     "nock": "^14.0.0-beta.16",
-    "ts-jest": "^29.2.5",
     "typescript": "^5.6.3"
   }
 }

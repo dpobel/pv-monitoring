@@ -1,6 +1,8 @@
-import { NullLogger } from "../adapters/Logger/NullLogger";
+import assert from "node:assert";
+import { beforeEach, describe, it } from "node:test";
 import { Day } from "../Day";
 import { Month } from "../Month";
+import { NullLogger } from "../adapters/Logger/NullLogger";
 import {
   FillDailyReportCommand,
   FillDailyReportInterface,
@@ -37,20 +39,21 @@ describe("FillYesterdayReportCliCommand", () => {
       yesterday.setDate(yesterday.getDate() - 1);
 
       const exitCode = await sut.run();
-      expect(service.executed).toBe(true);
-      expect(service.day).toEqual(
+      assert.ok(service.executed);
+      assert.deepEqual(
+        service.day,
         new Day(
           new Month(yesterday.getMonth() + 1, yesterday.getFullYear()),
           yesterday.getDate(),
         ),
       );
-      expect(exitCode).toEqual(0);
+      assert.equal(exitCode, 0);
     });
 
     it("should handle errors", async () => {
       service.shouldThrow = true;
       const exitCode = await sut.run();
-      expect(exitCode).toEqual(102);
+      assert.equal(exitCode, 102);
     });
   });
 });

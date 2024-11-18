@@ -1,13 +1,15 @@
-import { MemoryElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
-import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
-import { MemoryProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/MemoryProducedSolarEnergyFetcher";
-import { MemorySoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
+import assert from "node:assert";
+import { describe, it } from "node:test";
 import { DailyReport } from "../DailyReport";
 import { Day } from "../Day";
 import { ElectricityConsumption } from "../ElectricityConsumption";
 import { Month } from "../Month";
 import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../SoldSolarEnergy";
+import { MemoryElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
+import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
+import { MemoryProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/MemoryProducedSolarEnergyFetcher";
+import { MemorySoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
 import { FillDailyReport, FillDailyReportCommand } from "./FillDailyReport";
 
 describe("FillDailyReport", () => {
@@ -35,7 +37,9 @@ describe("FillDailyReport", () => {
   it("should build and store the daily report", async () => {
     await sut.execute(new FillDailyReportCommand(day));
 
-    expect(repository.dailyReports[0]).toEqual(
+    assert.equal(repository.dailyReports.length, 1);
+    assert.deepEqual(
+      repository.dailyReports[0],
       new DailyReport(
         day,
         previousYearConsumption,
