@@ -1,3 +1,5 @@
+import assert from "node:assert";
+import { describe, it } from "node:test";
 import { Month } from "../Month";
 import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
 import {
@@ -18,28 +20,30 @@ describe("InitializeMonthlyReportService", () => {
     };
     await sut.execute(new InitializeMonthlyReportCommand(month, basePrices));
 
-    expect(monthlyReportRepository.createData).toHaveLength(1);
-    expect(monthlyReportRepository.createData[0].basePrices).toEqual(
+    assert.equal(monthlyReportRepository.createData.length, 1);
+    assert.deepEqual(
+      monthlyReportRepository.createData[0].basePrices,
       basePrices,
     );
 
     const report = monthlyReportRepository.createData[0].report;
 
-    expect(report.month).toEqual(month);
+    assert.deepEqual(report.month, month);
+
     const monthDays = month.days;
-    expect(report.dailyReports).toHaveLength(monthDays.length);
+    assert.equal(report.dailyReports.length, monthDays.length);
     report.dailyReports.forEach((dailyReport, index) => {
-      expect(dailyReport.day).toEqual(monthDays[index]);
-      expect(dailyReport.electricityConsumption).toEqual({
+      assert.deepEqual(dailyReport.day, monthDays[index]);
+      assert.deepEqual(dailyReport.electricityConsumption, {
         offPeakHours: 0,
         peakHours: 0,
       });
-      expect(dailyReport.previousYearElectricityConsumption).toEqual({
+      assert.deepEqual(dailyReport.previousYearElectricityConsumption, {
         offPeakHours: 0,
         peakHours: 0,
       });
-      expect(dailyReport.producedSolarEnergy).toEqual({ quantity: 0 });
-      expect(dailyReport.soldSolarEnergy).toEqual({ quantity: 0 });
+      assert.deepEqual(dailyReport.producedSolarEnergy, { quantity: 0 });
+      assert.deepEqual(dailyReport.soldSolarEnergy, { quantity: 0 });
     });
   });
 });

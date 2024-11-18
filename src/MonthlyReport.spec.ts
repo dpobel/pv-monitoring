@@ -1,3 +1,5 @@
+import assert from "node:assert";
+import { describe, it } from "node:test";
 import { DailyReport } from "./DailyReport";
 import { Day } from "./Day";
 import { ElectricityConsumption } from "./ElectricityConsumption";
@@ -12,15 +14,15 @@ describe("MonthlyReport", () => {
       const report1 = new MonthlyReport(new Month(1, 2021), []);
       const report2 = new MonthlyReport(new Month(11, 2024), []);
 
-      expect(report1.name).toEqual("Relevé 01/2021");
-      expect(report2.name).toEqual("Relevé 11/2024");
+      assert.equal(report1.name, "Relevé 01/2021");
+      assert.equal(report2.name, "Relevé 11/2024");
     });
   });
 
   describe("countDailyReports", () => {
     it("should return the number of daily reports", () => {
       const report = new MonthlyReport(new Month(1, 2021), []);
-      expect(report.countDailyReports).toEqual(0);
+      assert.equal(report.countDailyReports, 0);
 
       const report2 = new MonthlyReport(new Month(1, 2021), [
         new DailyReport(
@@ -31,7 +33,7 @@ describe("MonthlyReport", () => {
           new SoldSolarEnergy(0),
         ),
       ]);
-      expect(report2.countDailyReports).toEqual(1);
+      assert.equal(report2.countDailyReports, 1);
     });
   });
 });

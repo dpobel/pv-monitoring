@@ -1,3 +1,5 @@
+import assert from "node:assert";
+import { afterEach, beforeEach, describe, it } from "node:test";
 import nock from "nock";
 import { Day } from "../../Day";
 import { Month } from "../../Month";
@@ -38,8 +40,8 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
           });
       });
 
-      it('should throw a "FailToGenerateToken" error', async () => {
-        await expect(sut.fetch(day)).rejects.toThrow(FailToGenerateToken);
+      it('should throw a "FailToGenerateToken" error', () => {
+        assert.rejects(sut.fetch(day), FailToGenerateToken);
       });
     });
 
@@ -88,7 +90,10 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
         it("should return the produced solar energy of the day", async () => {
           const producedSolarEnergy = await sut.fetch(day);
 
-          expect(producedSolarEnergy).toEqual(new ProducedSolarEnergy(1234000));
+          assert.deepEqual(
+            producedSolarEnergy,
+            new ProducedSolarEnergy(1234000),
+          );
         });
       });
 
@@ -102,10 +107,8 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
             });
         });
 
-        it("should return the produced solar energy of the day", async () => {
-          await expect(sut.fetch(day)).rejects.toThrow(
-            FailToRetrieveProducedSolarEnergy,
-          );
+        it("should return the produced solar energy of the day", () => {
+          assert.rejects(sut.fetch(day), FailToRetrieveProducedSolarEnergy);
         });
       });
     });

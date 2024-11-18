@@ -1,3 +1,5 @@
+import assert from "node:assert";
+import { describe, it } from "node:test";
 import { NullLogger } from "../adapters/Logger/NullLogger";
 import { CliCommand } from "./CliCommand";
 import { CommandRunner } from "./CommandRunner";
@@ -31,14 +33,14 @@ describe("CommandRunner", () => {
         "test",
       ]);
 
-      expect(testCommandExecuted).toBe(true);
-      expect(testCommandOptions).toEqual({
+      assert.ok(testCommandExecuted);
+      assert.deepEqual(testCommandOptions, {
         test: "2024-11-14",
         b: true,
         a: "test",
       });
 
-      expect(exitCode).toEqual(0);
+      assert.equal(exitCode, 0);
     });
 
     it("should handle an unknown command", async () => {
@@ -48,7 +50,7 @@ describe("CommandRunner", () => {
         "unknown-command",
         "--test",
       ]);
-      expect(exitCode).toEqual(255);
+      assert.equal(exitCode, 255);
     });
 
     it("should handle when several commands are provided", async () => {
@@ -59,7 +61,7 @@ describe("CommandRunner", () => {
         "another-command",
         "--test",
       ]);
-      expect(exitCode).toEqual(255);
+      assert.equal(exitCode, 255);
     });
 
     it("should handle when no command is provided", async () => {
@@ -68,7 +70,7 @@ describe("CommandRunner", () => {
         "some/path/to/cli.ts",
         "--test",
       ]);
-      expect(exitCode).toEqual(255);
+      assert.equal(exitCode, 255);
     });
   });
 });
