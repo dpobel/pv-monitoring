@@ -4,6 +4,7 @@ import { ElectricityConsumption } from "../../ElectricityConsumption";
 import { PeakHoursSchedule } from "../../PeakHoursSchedule";
 import { Time } from "../../Time";
 import { TimeSlot } from "../../TimeSlot";
+import { Logger } from "../Logger/Logger";
 
 export class FailToFetchElectricityConsumption extends Error {
   constructor(day: Day, error: Error) {
@@ -18,15 +19,20 @@ export class BokubLinkyElectricityConsumptionFetcher {
   constructor(
     private readonly linkyClient: LinkyClient,
     private readonly peakHoursSchedule: PeakHoursSchedule,
+    private readonly logger: Logger,
   ) {}
 
   async fetch(day: Day): Promise<ElectricityConsumption> {
     try {
-      const { interval_reading } = await this.linkyClient.getLoadCurve(
+      const response = await this.linkyClient.getLoadCurve(
         day.YYYYMMDD,
         day.tomorrow.YYYYMMDD,
       );
-      return this.computeConsumption(interval_reading);
+      this.logger.info(
+        `Fetched electricity consumption for ${day}, received`,
+        response,
+      );
+      return this.computeConsumption(response.interval_reading);
     } catch (error) {
       throw new FailToFetchElectricityConsumption(day, error as Error);
     }

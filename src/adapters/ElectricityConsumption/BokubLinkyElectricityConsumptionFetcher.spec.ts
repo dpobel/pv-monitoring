@@ -8,6 +8,7 @@ import { Month } from "../../Month";
 import { PeakHoursSchedule } from "../../PeakHoursSchedule";
 import { Time } from "../../Time";
 import { TimeSlot } from "../../TimeSlot";
+import { NullLogger } from "../Logger/NullLogger";
 import {
   BokubLinkyElectricityConsumptionFetcher,
   FailToFetchElectricityConsumption,
@@ -22,6 +23,7 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
     new PeakHoursSchedule([
       new TimeSlot(new Time(7, 30, 0), new Time(23, 30, 0)),
     ]),
+    new NullLogger(),
   );
   const day = new Day(new Month(11, 2024), 15);
 
