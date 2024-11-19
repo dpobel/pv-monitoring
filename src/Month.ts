@@ -29,7 +29,7 @@ export class Month {
   }
 
   get days() {
-    const days = new Array(this.getMaximumDay());
+    const days = new Array(this.dayNumber);
     return days.fill(0).map((_, i) => {
       return new Day(this, i + 1);
     });
@@ -39,7 +39,14 @@ export class Month {
     return new Month(this.month, this.year - 1);
   }
 
-  private getMaximumDay() {
+  get next() {
+    if (this.month === 12) {
+      return new Month(1, this.year + 1);
+    }
+    return new Month(this.month + 1, this.year);
+  }
+
+  get dayNumber() {
     if (MAX_DAYS_BY_MONTH.has(this.month)) {
       return MAX_DAYS_BY_MONTH.get(this.month);
     }
