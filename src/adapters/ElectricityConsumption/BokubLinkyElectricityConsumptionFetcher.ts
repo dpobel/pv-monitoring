@@ -44,16 +44,16 @@ export class BokubLinkyElectricityConsumptionFetcher {
     let totalOffPeak = 0;
     let totalPeak = 0;
     let previousEndTime = new Time(0, 0, 0);
-    interval_reading.forEach((metering) => {
+    for (const metering of interval_reading) {
       const endTime = this.createTime(metering.date);
       const timeSlot = new TimeSlot(previousEndTime, endTime);
       if (this.peakHoursSchedule.isInsidePeakHour(timeSlot)) {
         totalPeak += Number(metering.value);
-        return;
+      } else {
+        totalOffPeak += Number(metering.value);
       }
-      totalOffPeak += Number(metering.value);
       previousEndTime = endTime;
-    });
+    }
     return new ElectricityConsumption(totalOffPeak / 2, totalPeak / 2);
   }
 
