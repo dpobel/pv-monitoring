@@ -8,6 +8,7 @@ import {
 } from "../usecases/InitializeMonthlyReport";
 import { BasePrices } from "../usecases/types";
 import { InitializeMonthlyReportCliCommand } from "./InitializeMonthlyReport";
+import { basePrices } from "../config";
 
 class MockInitializeMonthlyReportService
   implements InitializeMonthlyReportInterface
@@ -35,7 +36,11 @@ describe("InitializeMonthlyReportCliCommand", () => {
 
     beforeEach(() => {
       service = new MockInitializeMonthlyReportService();
-      sut = new InitializeMonthlyReportCliCommand(service, new NullLogger());
+      sut = new InitializeMonthlyReportCliCommand(
+        service,
+        new NullLogger(),
+        basePrices,
+      );
     });
 
     it("should run the command for the current month", async () => {
@@ -46,11 +51,7 @@ describe("InitializeMonthlyReportCliCommand", () => {
         service.month,
         new Month(today.getMonth() + 1, today.getFullYear()),
       );
-      assert.deepEqual(service.prices, {
-        offPeakHours: 0.204,
-        peakHours: 0.2672,
-        solar: 0.1276,
-      });
+      assert.deepEqual(service.prices, basePrices);
       assert.equal(exitCode, 0);
     });
 
@@ -58,11 +59,7 @@ describe("InitializeMonthlyReportCliCommand", () => {
       const exitCode = await sut.run({ month: "2024-12" });
       assert.ok(service.executed);
       assert.deepEqual(service.month, new Month(12, 2024));
-      assert.deepEqual(service.prices, {
-        offPeakHours: 0.204,
-        peakHours: 0.2672,
-        solar: 0.1276,
-      });
+      assert.deepEqual(service.prices, basePrices);
       assert.equal(exitCode, 0);
     });
 
