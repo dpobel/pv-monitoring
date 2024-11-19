@@ -4,6 +4,7 @@ import {
   InitializeMonthlyReportCommand,
   InitializeMonthlyReportInterface,
 } from "../usecases/InitializeMonthlyReport";
+import { BasePrices } from "../usecases/types";
 import { CliCommand } from "./CliCommand";
 
 export class InitializeMonthlyReportCliCommand implements CliCommand {
@@ -12,6 +13,7 @@ export class InitializeMonthlyReportCliCommand implements CliCommand {
   constructor(
     private readonly service: InitializeMonthlyReportInterface,
     private readonly logger: Logger,
+    private readonly basePrices: BasePrices,
   ) {}
 
   async run(options: Record<string, unknown>) {
@@ -26,11 +28,7 @@ export class InitializeMonthlyReportCliCommand implements CliCommand {
 
     try {
       await this.service.execute(
-        new InitializeMonthlyReportCommand(month, {
-          offPeakHours: 0.204,
-          peakHours: 0.2672,
-          solar: 0.1276,
-        }),
+        new InitializeMonthlyReportCommand(month, this.basePrices),
       );
       return 0;
     } catch (error) {

@@ -1,9 +1,6 @@
 import "dotenv/config";
 import { Session } from "linky";
-import { PeakHoursSchedule } from "./PeakHoursSchedule";
 import { SoldSolarEnergy } from "./SoldSolarEnergy";
-import { Time } from "./Time";
-import { TimeSlot } from "./TimeSlot";
 import { BokubLinkyElectricityConsumptionFetcher } from "./adapters/ElectricityConsumption/BokubLinkyElectricityConsumptionFetcher";
 import { ConsoleLogger } from "./adapters/Logger/ConsoleLogger";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
@@ -15,6 +12,7 @@ import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
 import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
 import { FillDailyReport } from "./usecases/FillDailyReport";
 import { InitializeMonthlyReport } from "./usecases/InitializeMonthlyReport";
+import { basePrices, peakHoursSchedule } from "./config";
 
 const logger = new ConsoleLogger();
 
@@ -33,9 +31,7 @@ const linkyClient = new Session(process.env.CONSO_API_TOKEN || "");
 const fillDailyReportService = new FillDailyReport(
   new BokubLinkyElectricityConsumptionFetcher(
     linkyClient,
-    new PeakHoursSchedule([
-      new TimeSlot(new Time(7, 30, 0), new Time(23, 30, 0)),
-    ]),
+    peakHoursSchedule,
     logger,
   ),
   new HoymilesWebAPIProducedSolarEnergyFetcher(
@@ -54,6 +50,7 @@ export default {
   InitializeMonthlyReportCliCommand: new InitializeMonthlyReportCliCommand(
     new InitializeMonthlyReport(monthlyReportRepository),
     logger,
+    basePrices,
   ),
   FillDailyReportCliCommand: new FillDailyReportCliCommand(
     fillDailyReportService,
