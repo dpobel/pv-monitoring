@@ -31,7 +31,7 @@ describe("Day", () => {
   });
 
   describe("tomorrow", () => {
-    it("should return the previous day", () => {
+    it("should return the next day", () => {
       const day = new Day(new Month(11, 2024), 12);
       assert.deepEqual(day.tomorrow, new Day(new Month(11, 2024), 13));
     });
