@@ -10,7 +10,7 @@
     "fill-daily-report": "tsx cli.ts fill-daily-report",
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "test": "node --import tsx --import dotenv/config --test 'src/**/*spec.ts'"
+    "test": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*spec.ts'"
   },
   "type": "module",
   "repository": {
