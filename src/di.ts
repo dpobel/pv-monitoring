@@ -1,9 +1,10 @@
 import "dotenv/config";
-import { Day } from "./Day";
-import { ElectricityConsumption } from "./ElectricityConsumption";
-import { Month } from "./Month";
+import { Session } from "linky";
+import { PeakHoursSchedule } from "./PeakHoursSchedule";
 import { SoldSolarEnergy } from "./SoldSolarEnergy";
-import { MemoryElectricityConsumptionFetcher } from "./adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
+import { Time } from "./Time";
+import { TimeSlot } from "./TimeSlot";
+import { BokubLinkyElectricityConsumptionFetcher } from "./adapters/ElectricityConsumption/BokubLinkyElectricityConsumptionFetcher";
 import { ConsoleLogger } from "./adapters/Logger/ConsoleLogger";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
 import { RowBuilder } from "./adapters/MonthlyReport/RowBuilder";
@@ -14,13 +15,6 @@ import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
 import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
 import { FillDailyReport } from "./usecases/FillDailyReport";
 import { InitializeMonthlyReport } from "./usecases/InitializeMonthlyReport";
-
-const date = new Date();
-date.setDate(date.getDate() - 1);
-const day = new Day(
-  new Month(date.getMonth() + 1, date.getFullYear()),
-  date.getDate(),
-);
 
 const logger = new ConsoleLogger();
 
@@ -35,12 +29,14 @@ const monthlyReportRepository = new GoogleSpreadsheetMonthlyReportRepository(
   new RowBuilder(),
 );
 
+const linkyClient = new Session(process.env.CONSO_API_TOKEN || "");
 const fillDailyReportService = new FillDailyReport(
-  new MemoryElectricityConsumptionFetcher(
-    new Map([
-      [day.minusAYear.name, new ElectricityConsumption(0, 0)],
-      [day.name, new ElectricityConsumption(0, 0)],
+  new BokubLinkyElectricityConsumptionFetcher(
+    linkyClient,
+    new PeakHoursSchedule([
+      new TimeSlot(new Time(7, 30, 0), new Time(23, 30, 0)),
     ]),
+    logger,
   ),
   new HoymilesWebAPIProducedSolarEnergyFetcher(
     {
