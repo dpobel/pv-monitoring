@@ -12,9 +12,10 @@ const HEADERS = {
   Total: "H",
   Prix: "I",
   Évolution: "J",
-  "Production PV": "K",
-  "Qté vendue": "L",
-  "Gain vente": "M",
+  Économie: "K",
+  "Production PV": "L",
+  "Qté vendue": "M",
+  "Gain vente": "N",
 };
 
 type Formula = string;
@@ -30,6 +31,7 @@ type Row = {
   Total: Formula;
   Prix: Formula;
   Évolution: Formula;
+  Économie: Formula;
   "Production PV": number;
   "Qté vendue": number;
   "Gain vente": Formula;
@@ -46,6 +48,7 @@ type TotalRow = {
   Total: Formula;
   Prix: Formula;
   Évolution: Formula;
+  Économie: Formula;
   "Production PV": Formula;
   "Qté vendue": Formula;
   "Gain vente": Formula;
@@ -62,6 +65,7 @@ type RowName =
   | "Total"
   | "Prix"
   | "Évolution"
+  | "Économie"
   | "Production PV"
   | "Qté vendue"
   | "Gain vente";
@@ -109,6 +113,10 @@ export class RowBuilder {
         basePricesA1Mapping.peakHours
       }/1000; 2)`,
       Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
+      Économie: `=${this.getA1Notation(
+        "Prix an-1",
+        rowIndex,
+      )}-${this.getA1Notation("Prix", rowIndex)}`,
       "Production PV": dailyReport.producedSolarEnergy.quantity,
       "Qté vendue": dailyReport.soldSolarEnergy.quantity,
       "Gain vente": `=ROUND(${this.getA1Notation("Qté vendue", rowIndex)}*${
@@ -196,6 +204,11 @@ export class RowBuilder {
         "Total an-1",
         "Total",
         totalRowValueIndex,
+      ),
+      Économie: this.getSumColumnFormula(
+        "Économie",
+        firstRowValueIndex,
+        latestRowValueIndex,
       ),
       "Production PV": this.getSumColumnFormula(
         "Production PV",
