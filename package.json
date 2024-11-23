@@ -13,7 +13,7 @@
     "test:unit": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*spec.ts'",
     "test:unit:watch": "node --import tsx --import dotenv/config --watch --test-reporter spec --test 'src/**/*spec.ts'",
     "test:integration": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*integration.ts'",
-    "test:integration:watch": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*integration.ts'",
+    "test:integration:watch": "node --import tsx --import dotenv/config --watch --test-reporter spec --test 'src/**/*integration.ts'",
     "test": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*spec.ts' --test 'src/**/*integration.ts'"
   },
   "type": "module",

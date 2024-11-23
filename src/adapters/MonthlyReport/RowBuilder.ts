@@ -16,6 +16,7 @@ const HEADERS = {
   "Production PV": "L",
   "Qté vendue": "M",
   "Gain vente": "N",
+  "Gain total": "O",
 };
 
 type Formula = string;
@@ -35,6 +36,7 @@ type Row = {
   "Production PV": number;
   "Qté vendue": number;
   "Gain vente": Formula;
+  "Gain total": Formula;
 };
 
 type TotalRow = {
@@ -52,6 +54,7 @@ type TotalRow = {
   "Production PV": Formula;
   "Qté vendue": Formula;
   "Gain vente": Formula;
+  "Gain total": Formula;
 };
 
 type RowName =
@@ -68,7 +71,8 @@ type RowName =
   | "Économie"
   | "Production PV"
   | "Qté vendue"
-  | "Gain vente";
+  | "Gain vente"
+  | "Gain total";
 
 export class RowBuilder {
   getHeaders() {
@@ -122,6 +126,10 @@ export class RowBuilder {
       "Gain vente": `=ROUND(${this.getA1Notation("Qté vendue", rowIndex)}*${
         basePricesA1Mapping.solar
       }/1000;2)`,
+      "Gain total": `=${this.getA1Notation(
+        "Économie",
+        rowIndex,
+      )}+${this.getA1Notation("Gain vente", rowIndex)}`,
     };
   }
 
@@ -222,6 +230,11 @@ export class RowBuilder {
       ),
       "Gain vente": this.getSumColumnFormula(
         "Gain vente",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Gain total": this.getSumColumnFormula(
+        "Gain total",
         firstRowValueIndex,
         latestRowValueIndex,
       ),
