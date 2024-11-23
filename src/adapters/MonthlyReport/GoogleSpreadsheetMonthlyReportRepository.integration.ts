@@ -79,22 +79,28 @@ describe(
         const lines = csvStream.toString().split("\n");
         assert.equal(
           lines[0].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,',
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,,',
         );
-        assert.equal(lines[1].trim(), ",,,,,,,,,,,,,");
+        assert.equal(lines[1].trim(), ",,,,,,,,,,,,,,");
         assert.equal(
           lines[2].trim(),
-          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente",
+          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total",
         );
-        assert.equal(lines[3].trim(), "01/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0");
+        assert.equal(
+          lines[3].trim(),
+          "01/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0",
+        );
         assert.equal(
           lines[4].trim(),
-          '02/11/2024,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52"',
+          '02/11/2024,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52","1,52"',
         );
-        assert.equal(lines[5].trim(), "03/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0");
+        assert.equal(
+          lines[5].trim(),
+          "03/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0",
+        );
         assert.equal(
           lines[6].trim(),
-          'Total,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52"',
+          'Total,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52","1,52"',
         );
       });
     });
@@ -131,24 +137,24 @@ describe(
         assert.equal(lines.length, dailyReports.length + 4);
         assert.equal(
           lines[0].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,',
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,,',
         );
-        assert.equal(lines[1].trim(), ",,,,,,,,,,,,,");
+        assert.equal(lines[1].trim(), ",,,,,,,,,,,,,,");
         assert.equal(
           lines[2].trim(),
-          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente",
+          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total",
         );
         assert.equal(
           lines[3].trim(),
-          '01/11/2024,2372,9700,12072,"2,18",3020,4230,7250,"1,15",-40%,"1,03",8289,7289,"2,19"',
+          '01/11/2024,2372,9700,12072,"2,18",3020,4230,7250,"1,15",-40%,"1,03",8289,7289,"2,19","3,22"',
         );
         assert.equal(
           lines[4].trim(),
-          "02/11/2024,10000,10000,20000,3,10000,10000,20000,3,0%,0,0,0,0",
+          "02/11/2024,10000,10000,20000,3,10000,10000,20000,3,0%,0,0,0,0,0",
         );
         assert.equal(
           lines[5].trim(),
-          'Total,12372,19700,32072,"5,18",13020,14230,27250,"4,15",-15%,"1,03",8289,7289,"2,19"',
+          'Total,12372,19700,32072,"5,18",13020,14230,27250,"4,15",-15%,"1,03",8289,7289,"2,19","3,22"',
         );
       });
     });
