@@ -17,6 +17,7 @@ const HEADERS = {
   "Qté vendue": "M",
   "Gain vente": "N",
   "Gain total": "O",
+  "Autocons.": "P",
 };
 
 type Formula = string;
@@ -37,6 +38,7 @@ type Row = {
   "Qté vendue": number;
   "Gain vente": Formula;
   "Gain total": Formula;
+  "Autocons.": Formula;
 };
 
 type TotalRow = {
@@ -55,6 +57,7 @@ type TotalRow = {
   "Qté vendue": Formula;
   "Gain vente": Formula;
   "Gain total": Formula;
+  "Autocons.": Formula;
 };
 
 type RowName =
@@ -72,7 +75,8 @@ type RowName =
   | "Production PV"
   | "Qté vendue"
   | "Gain vente"
-  | "Gain total";
+  | "Gain total"
+  | "Autocons.";
 
 export class RowBuilder {
   getHeaders() {
@@ -130,6 +134,7 @@ export class RowBuilder {
         "Économie",
         rowIndex,
       )}+${this.getA1Notation("Gain vente", rowIndex)}`,
+      "Autocons.": this.getAutoconsumptionFormula(rowIndex),
     };
   }
 
@@ -157,6 +162,19 @@ export class RowBuilder {
       valueIndex,
     )}-${this.getA1Notation(baseName, valueIndex)})/${this.getA1Notation(
       baseName,
+      valueIndex,
+    )}); "N/A")`;
+  }
+
+  private getAutoconsumptionFormula(valueIndex: number): Formula {
+    return `=IF(${this.getA1Notation(
+      "Production PV",
+      valueIndex,
+    )}; TO_PERCENT((${this.getA1Notation(
+      "Production PV",
+      valueIndex,
+    )}-${this.getA1Notation("Qté vendue", valueIndex)})/${this.getA1Notation(
+      "Production PV",
       valueIndex,
     )}); "N/A")`;
   }
@@ -238,6 +256,7 @@ export class RowBuilder {
         firstRowValueIndex,
         latestRowValueIndex,
       ),
+      "Autocons.": this.getAutoconsumptionFormula(totalRowValueIndex),
     };
   }
 }
