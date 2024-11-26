@@ -10,5 +10,5 @@ export const peakHoursSchedule = new PeakHoursSchedule([
 export const basePrices: BasePrices = {
   offPeakHours: 0.204,
   peakHours: 0.2672,
-  solar: 0.1276,
+  solar: 0.1269,
 };
