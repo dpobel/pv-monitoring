@@ -1,18 +1,17 @@
 import "dotenv/config";
 import { Session } from "linky";
-import { SoldSolarEnergy } from "./SoldSolarEnergy";
 import { BokubLinkyElectricityConsumptionFetcher } from "./adapters/ElectricityConsumption/BokubLinkyElectricityConsumptionFetcher";
 import { ConsoleLogger } from "./adapters/Logger/ConsoleLogger";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
 import { RowBuilder } from "./adapters/MonthlyReport/RowBuilder";
 import { HoymilesWebAPIProducedSolarEnergyFetcher } from "./adapters/ProducedSolarEnergy/HoymilesWebAPIProducedSolarEnergyFetcher";
-import { MemorySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
+import { BokhubLinkySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/BokubLinkySoldSolarEnergyFetcher";
 import { FillDailyReportCliCommand } from "./cli/FillDailyReport";
 import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
 import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
+import { basePrices, peakHoursSchedule } from "./config";
 import { FillDailyReport } from "./usecases/FillDailyReport";
 import { InitializeMonthlyReport } from "./usecases/InitializeMonthlyReport";
-import { basePrices, peakHoursSchedule } from "./config";
 
 const logger = new ConsoleLogger();
 
@@ -42,7 +41,7 @@ const fillDailyReportService = new FillDailyReport(
     },
     logger,
   ),
-  new MemorySoldSolarEnergyFetcher(new SoldSolarEnergy(0)),
+  new BokhubLinkySoldSolarEnergyFetcher(linkyClient, logger),
   monthlyReportRepository,
 );
 
