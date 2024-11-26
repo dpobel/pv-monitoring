@@ -5,7 +5,7 @@ import { ConsoleLogger } from "./adapters/Logger/ConsoleLogger";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
 import { RowBuilder } from "./adapters/MonthlyReport/RowBuilder";
 import { HoymilesWebAPIProducedSolarEnergyFetcher } from "./adapters/ProducedSolarEnergy/HoymilesWebAPIProducedSolarEnergyFetcher";
-import { BokhubLinkySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/BokubLinkySoldSolarEnergyFetcher";
+import { BokubLinkySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/BokubLinkySoldSolarEnergyFetcher";
 import { FillDailyReportCliCommand } from "./cli/FillDailyReport";
 import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
 import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
@@ -41,7 +41,7 @@ const fillDailyReportService = new FillDailyReport(
     },
     logger,
   ),
-  new BokhubLinkySoldSolarEnergyFetcher(linkyClient, logger),
+  new BokubLinkySoldSolarEnergyFetcher(linkyClient, logger),
   monthlyReportRepository,
 );
 

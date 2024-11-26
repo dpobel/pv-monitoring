@@ -1,8 +1,8 @@
 import { Session as LinkyClient } from "linky";
 import { Day } from "../../Day";
 import { SoldSolarEnergy } from "../../SoldSolarEnergy";
-import { SoldSolarEnergyFetcher } from "./SoldSolarEnergyFetcher";
 import { Logger } from "../Logger/Logger";
+import { SoldSolarEnergyFetcher } from "./SoldSolarEnergyFetcher";
 
 export class FailToFetchSoldSolarEnergy extends Error {
   constructor(day: Day, error: Error) {
@@ -12,7 +12,7 @@ export class FailToFetchSoldSolarEnergy extends Error {
   }
 }
 
-export class BokhubLinkySoldSolarEnergyFetcher
+export class BokubLinkySoldSolarEnergyFetcher
   implements SoldSolarEnergyFetcher
 {
   constructor(

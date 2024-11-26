@@ -4,18 +4,18 @@ import jwt from "jsonwebtoken";
 import { Session as LinkyClient } from "linky";
 import { Day } from "../../Day";
 import { Month } from "../../Month";
+import { SoldSolarEnergy } from "../../SoldSolarEnergy";
 import { NullLogger } from "../Logger/NullLogger";
-import { dailyProduction } from "./fixtures/fixtures";
 import {
-  BokhubLinkySoldSolarEnergyFetcher,
+  BokubLinkySoldSolarEnergyFetcher,
   FailToFetchSoldSolarEnergy,
 } from "./BokubLinkySoldSolarEnergyFetcher";
-import { SoldSolarEnergy } from "../../SoldSolarEnergy";
+import { dailyProduction } from "./fixtures/fixtures";
 
 describe("BokubLinkySoldSolarEnergyFetcher", () => {
   const token = jwt.sign({ sub: ["prm"] }, "secret");
   const client = new LinkyClient(token);
-  const sut = new BokhubLinkySoldSolarEnergyFetcher(client, new NullLogger());
+  const sut = new BokubLinkySoldSolarEnergyFetcher(client, new NullLogger());
   const day = new Day(new Month(11, 2024), 24);
 
   afterEach(() => {
