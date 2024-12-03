@@ -32,7 +32,11 @@ export class BokubLinkyElectricityConsumptionFetcher {
         `Fetched electricity consumption for ${day}, received`,
         response,
       );
-      return this.computeConsumption(response.interval_reading);
+      return this.computeConsumption(
+        response.interval_reading.sort((measure1, measure2) => {
+          return measure1.date.localeCompare(measure2.date);
+        }),
+      );
     } catch (error) {
       throw new FailToFetchElectricityConsumption(day, error as Error);
     }
