@@ -13,7 +13,10 @@ import {
   BokubLinkyElectricityConsumptionFetcher,
   FailToFetchElectricityConsumption,
 } from "./BokubLinkyElectricityConsumptionFetcher";
-import { loadCurveResponseData } from "./fixtures/fixtures";
+import {
+  loadCurveResponseData,
+  unorderedLoadCurveResponseData,
+} from "./fixtures/fixtures";
 
 describe("BokubLinkyElectricityConsumptionFetcher", () => {
   const token = jwt.sign({ sub: ["prm"] }, "secret");
@@ -37,6 +40,24 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
       "getLoadCurve",
       () => {
         return Promise.resolve(loadCurveResponseData);
+      },
+    );
+
+    const consumption = await sut.fetch(day);
+    assert.equal(functionContext.callCount(), 1);
+    assert.deepEqual(functionContext.calls[0].arguments, [
+      "2024-11-15",
+      "2024-11-16",
+    ]);
+    assert.deepEqual(consumption, new ElectricityConsumption(2830, 4187));
+  });
+
+  it("should fetch the consumption of the day based on an unordered measure list", async () => {
+    const { mock: functionContext } = mock.method(
+      client,
+      "getLoadCurve",
+      () => {
+        return Promise.resolve(unorderedLoadCurveResponseData);
       },
     );
 
