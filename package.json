@@ -31,7 +31,7 @@
     "dotenv": "^16.4.7",
     "google-auth-library": "^9.15.0",
     "google-spreadsheet": "^4.1.4",
-    "linky": "^2.0.2",
+    "linky": "^2.1.0",
     "minimist": "^1.2.8",
     "tsx": "^4.19.2"
   },
