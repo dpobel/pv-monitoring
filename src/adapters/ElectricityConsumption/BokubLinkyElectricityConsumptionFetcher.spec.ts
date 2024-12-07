@@ -14,6 +14,7 @@ import {
   FailToFetchElectricityConsumption,
 } from "./BokubLinkyElectricityConsumptionFetcher";
 import {
+  daylightSavingTimeEndLoadCurveReponseData,
   loadCurveResponseData,
   unorderedLoadCurveResponseData,
 } from "./fixtures/fixtures";
@@ -28,13 +29,13 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
     ]),
     new NullLogger(),
   );
-  const day = new Day(new Month(11, 2024), 15);
 
   afterEach(() => {
     mock.reset();
   });
 
   it("should fetch the consumption of the day", async () => {
+    const day = new Day(new Month(11, 2024), 15);
     const { mock: functionContext } = mock.method(
       client,
       "getLoadCurve",
@@ -53,6 +54,7 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
   });
 
   it("should fetch the consumption of the day based on an unordered measure list", async () => {
+    const day = new Day(new Month(11, 2024), 15);
     const { mock: functionContext } = mock.method(
       client,
       "getLoadCurve",
@@ -70,7 +72,27 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
     assert.deepEqual(consumption, new ElectricityConsumption(2830, 4187));
   });
 
+  it("should fetch the consumption for a daylight saving time end day", async () => {
+    const day = new Day(new Month(10, 2023), 29);
+    const { mock: functionContext } = mock.method(
+      client,
+      "getLoadCurve",
+      () => {
+        return Promise.resolve(daylightSavingTimeEndLoadCurveReponseData);
+      },
+    );
+
+    const consumption = await sut.fetch(day);
+    assert.equal(functionContext.callCount(), 1);
+    assert.deepEqual(functionContext.calls[0].arguments, [
+      "2023-10-29",
+      "2023-10-30",
+    ]);
+    assert.deepEqual(consumption, new ElectricityConsumption(12057, 6655));
+  });
+
   it("should handle error when fetching the consumption of the day", async () => {
+    const day = new Day(new Month(11, 2024), 15);
     mock.method(client, "getLoadCurve", () => {
       return Promise.reject(new Error("whatever"));
     });
