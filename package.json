@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/jsonwebtoken": "^9.0.7",
+    "@types/jsonwebtoken": "^9.0.8",
     "@types/minimist": "^1.2.5",
     "@types/node": "^22.10.10",
     "jsonwebtoken": "^9.0.2",
