@@ -48,7 +48,7 @@ export class Month {
 
   get dayNumber() {
     if (MAX_DAYS_BY_MONTH.has(this.month)) {
-      return MAX_DAYS_BY_MONTH.get(this.month);
+      return MAX_DAYS_BY_MONTH.get(this.month) as number;
     }
     if (
       (this.year % 4 === 0 && this.year % 100 !== 0) ||
