@@ -1,20 +1,24 @@
 import { DailyReport } from "../../DailyReport";
 import { MonthlyReport } from "../../MonthlyReport";
-import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
+import { BasePrices } from "../BasePrices/BasePricesFinder";
+import { MonthlyReportRepository } from "./MonthlyReportRepository";
 
 export class MemoryMonthlyReportRepository implements MonthlyReportRepository {
   public readonly createData: {
     report: MonthlyReport;
+    basePricesList: BasePrices[];
+  }[] = [];
+
+  public readonly dailyReports: {
+    dailyReport: DailyReport;
     basePrices: BasePrices;
   }[] = [];
 
-  public readonly dailyReports: DailyReport[] = [];
-
-  async create(report: MonthlyReport, basePrices: BasePrices) {
-    this.createData.push({ report, basePrices });
+  async create(report: MonthlyReport, basePricesList: BasePrices[]) {
+    this.createData.push({ report, basePricesList });
   }
 
-  async store(dailyReport: DailyReport) {
-    this.dailyReports.push(dailyReport);
+  async store(dailyReport: DailyReport, basePrices: BasePrices) {
+    this.dailyReports.push({ dailyReport, basePrices });
   }
 }

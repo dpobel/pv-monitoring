@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { Session } from "linky";
+import { GenuineBasePricesFinder } from "./adapters/BasePrices/GenuineBasePricesFinder";
 import { BokubLinkyElectricityConsumptionFetcher } from "./adapters/ElectricityConsumption/BokubLinkyElectricityConsumptionFetcher";
 import { ConsoleLogger } from "./adapters/Logger/ConsoleLogger";
 import { GoogleSpreadsheetMonthlyReportRepository } from "./adapters/MonthlyReport/GoogleSpreadsheetMonthlyReportRepository";
@@ -9,11 +10,12 @@ import { BokubLinkySoldSolarEnergyFetcher } from "./adapters/SoldSolarEnergy/Bok
 import { FillDailyReportCliCommand } from "./cli/FillDailyReport";
 import { FillYesterdayReportCliCommand } from "./cli/FillYesterdayReport";
 import { InitializeMonthlyReportCliCommand } from "./cli/InitializeMonthlyReport";
-import { basePrices, peakHoursSchedule } from "./config";
+import { peakHoursSchedule } from "./config";
 import { FillDailyReport } from "./usecases/FillDailyReport";
 import { InitializeMonthlyReport } from "./usecases/InitializeMonthlyReport";
 
 const logger = new ConsoleLogger();
+const basePricesFinder = new GenuineBasePricesFinder();
 
 const monthlyReportRepository = new GoogleSpreadsheetMonthlyReportRepository(
   {
@@ -43,13 +45,13 @@ const fillDailyReportService = new FillDailyReport(
   ),
   new BokubLinkySoldSolarEnergyFetcher(linkyClient, logger),
   monthlyReportRepository,
+  basePricesFinder,
 );
 
 export default {
   InitializeMonthlyReportCliCommand: new InitializeMonthlyReportCliCommand(
-    new InitializeMonthlyReport(monthlyReportRepository),
+    new InitializeMonthlyReport(monthlyReportRepository, basePricesFinder),
     logger,
-    basePrices,
   ),
   FillDailyReportCliCommand: new FillDailyReportCliCommand(
     fillDailyReportService,

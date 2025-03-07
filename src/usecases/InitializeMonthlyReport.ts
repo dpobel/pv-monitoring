@@ -1,13 +1,10 @@
 import { Month } from "../Month";
 import { MonthlyReport } from "../MonthlyReport";
+import { BasePricesFinder } from "../adapters/BasePrices/BasePricesFinder";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
-import { BasePrices } from "./types";
 
 export class InitializeMonthlyReportCommand {
-  constructor(
-    public readonly month: Month,
-    public readonly prices: BasePrices,
-  ) {}
+  constructor(public readonly month: Month) {}
 }
 
 export interface InitializeMonthlyReportInterface {
@@ -19,12 +16,14 @@ export class InitializeMonthlyReport
 {
   constructor(
     private readonly monthlyReportRepository: MonthlyReportRepository,
+    private readonly basesPricesFinder: BasePricesFinder,
   ) {}
 
   async execute(command: InitializeMonthlyReportCommand) {
+    const pricesList = this.basesPricesFinder.findForMonth(command.month);
     await this.monthlyReportRepository.create(
       MonthlyReport.fromMonth(command.month),
-      command.prices,
+      pricesList,
     );
   }
 }

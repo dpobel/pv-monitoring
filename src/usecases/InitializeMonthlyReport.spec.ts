@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import { Month } from "../Month";
+import { TestBasePricesFinder } from "../adapters/BasePrices/TestBasePricesFinder";
 import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
 import {
   InitializeMonthlyReport,
@@ -9,21 +10,21 @@ import {
 
 describe("InitializeMonthlyReportService", () => {
   const monthlyReportRepository = new MemoryMonthlyReportRepository();
-  const sut = new InitializeMonthlyReport(monthlyReportRepository);
+  const testBasePricesFinder = new TestBasePricesFinder();
+  const sut = new InitializeMonthlyReport(
+    monthlyReportRepository,
+    testBasePricesFinder,
+  );
 
   it("should initialize a monthly report", async () => {
     const month = new Month(11, 2024);
-    const basePrices = {
-      offPeakHours: 0.1,
-      peakHours: 0.2,
-      solar: 0.3,
-    };
-    await sut.execute(new InitializeMonthlyReportCommand(month, basePrices));
+    const basePricesList = testBasePricesFinder.findForMonth(month);
+    await sut.execute(new InitializeMonthlyReportCommand(month));
 
     assert.equal(monthlyReportRepository.createData.length, 1);
     assert.deepEqual(
-      monthlyReportRepository.createData[0].basePrices,
-      basePrices,
+      monthlyReportRepository.createData[0].basePricesList,
+      basePricesList,
     );
 
     const report = monthlyReportRepository.createData[0].report;

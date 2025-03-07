@@ -71,6 +71,12 @@ describe(
             new ProducedSolarEnergy(1313),
             new SoldSolarEnergy(1717),
           ),
+          {
+            label: "Test base prices",
+            offPeakHours: 0.1,
+            peakHours: 0.2,
+            solar: 0.3,
+          },
         );
         doc.resetLocalCache();
         await doc.loadInfo();
@@ -126,11 +132,14 @@ describe(
           new ProducedSolarEnergy(0),
           new SoldSolarEnergy(0),
         );
-        await sut.create(report, {
-          offPeakHours: 0.1,
-          peakHours: 0.2,
-          solar: 0.3,
-        });
+        await sut.create(report, [
+          {
+            label: "Test base prices",
+            offPeakHours: 0.1,
+            peakHours: 0.2,
+            solar: 0.3,
+          },
+        ]);
         await doc.loadInfo();
         const sheet = doc.sheetsByTitle[report.name];
         const csvStream = await sheet.downloadAsCSV();

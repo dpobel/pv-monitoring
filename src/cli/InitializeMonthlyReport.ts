@@ -4,7 +4,6 @@ import {
   InitializeMonthlyReportCommand,
   InitializeMonthlyReportInterface,
 } from "../usecases/InitializeMonthlyReport";
-import { BasePrices } from "../usecases/types";
 import { CliCommand } from "./CliCommand";
 
 export class InitializeMonthlyReportCliCommand implements CliCommand {
@@ -13,7 +12,6 @@ export class InitializeMonthlyReportCliCommand implements CliCommand {
   constructor(
     private readonly service: InitializeMonthlyReportInterface,
     private readonly logger: Logger,
-    private readonly basePrices: BasePrices,
   ) {}
 
   async run(options: Record<string, unknown>) {
@@ -27,9 +25,7 @@ export class InitializeMonthlyReportCliCommand implements CliCommand {
     const month = this.getMonth(monthString);
 
     try {
-      await this.service.execute(
-        new InitializeMonthlyReportCommand(month, this.basePrices),
-      );
+      await this.service.execute(new InitializeMonthlyReportCommand(month));
       return 0;
     } catch (error) {
       this.logger.error(
