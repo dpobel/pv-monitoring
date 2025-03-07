@@ -1,14 +1,9 @@
 import { DailyReport } from "../../DailyReport";
 import { MonthlyReport } from "../../MonthlyReport";
-
-export type BasePrices = {
-  offPeakHours: number;
-  peakHours: number;
-  solar: number;
-};
+import { BasePrices } from "../BasePrices/BasePricesFinder";
 
 export interface MonthlyReportRepository {
-  create(report: MonthlyReport, basePrices: BasePrices): Promise<void>;
+  create(report: MonthlyReport, basePricesList: BasePrices[]): Promise<void>;
 
-  store(dailyReport: DailyReport): Promise<void>;
+  store(dailyReport: DailyReport, basePrices: BasePrices): Promise<void>;
 }

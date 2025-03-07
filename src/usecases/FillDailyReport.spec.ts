@@ -6,6 +6,7 @@ import { ElectricityConsumption } from "../ElectricityConsumption";
 import { Month } from "../Month";
 import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../SoldSolarEnergy";
+import { TestBasePricesFinder } from "../adapters/BasePrices/TestBasePricesFinder";
 import { MemoryElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
 import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
 import { MemoryProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/MemoryProducedSolarEnergyFetcher";
@@ -22,6 +23,7 @@ describe("FillDailyReport", () => {
   const soldSolarEnergy = new SoldSolarEnergy(100);
 
   const repository = new MemoryMonthlyReportRepository();
+  const basePricesFinder = new TestBasePricesFinder();
   const sut = new FillDailyReport(
     new MemoryElectricityConsumptionFetcher(
       new Map<string, ElectricityConsumption>([
@@ -32,21 +34,22 @@ describe("FillDailyReport", () => {
     new MemoryProducedSolarEnergyFetcher(producedSolarEnergy),
     new MemorySoldSolarEnergyFetcher(soldSolarEnergy),
     repository,
+    basePricesFinder,
   );
 
   it("should build and store the daily report", async () => {
     await sut.execute(new FillDailyReportCommand(day));
 
     assert.equal(repository.dailyReports.length, 1);
-    assert.deepEqual(
-      repository.dailyReports[0],
-      new DailyReport(
+    assert.deepEqual(repository.dailyReports[0], {
+      dailyReport: new DailyReport(
         day,
         previousYearConsumption,
         consumption,
         producedSolarEnergy,
         soldSolarEnergy,
       ),
-    );
+      basePrices: basePricesFinder.findForDay(day),
+    });
   });
 });
