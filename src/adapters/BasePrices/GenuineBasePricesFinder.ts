@@ -42,10 +42,10 @@ export class GenuineBasePricesFinder implements BasePricesFinder {
   findForDay(day: Day) {
     if (day.isBefore(new Day(new Month(2, 2025), 1))) {
       return before20250201;
-    } else if (day.isBefore(new Day(new Month(3, 2025), 14))) {
-      return between20250201and20250314;
-    } else {
-      return after20250314;
     }
+    if (day.isBefore(new Day(new Month(3, 2025), 14))) {
+      return between20250201and20250314;
+    }
+    return after20250314;
   }
 }
