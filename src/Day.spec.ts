@@ -4,6 +4,20 @@ import { Day } from "./Day";
 import { Month } from "./Month";
 
 describe("Day", () => {
+  describe("isBefore", () => {
+    it("should compare two days", () => {
+      const nov2024_12 = new Day(new Month(11, 2024), 12);
+      const nov2024_13 = new Day(new Month(11, 2024), 13);
+      const nov2024_11 = new Day(new Month(11, 2024), 11);
+      const nov2023_13 = new Day(new Month(11, 2023), 13);
+      assert.ok(nov2024_12.isBefore(nov2024_13));
+      assert.ok(!nov2024_13.isBefore(nov2024_12));
+      assert.ok(nov2024_11.isBefore(nov2024_12));
+      assert.ok(nov2023_13.isBefore(nov2024_13));
+      assert.ok(!nov2024_13.isBefore(nov2024_13));
+    });
+  });
+
   describe("name", () => {
     it("should return the name of the day", () => {
       const day1 = new Day(new Month(1, 2024), 1);
