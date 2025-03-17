@@ -6,6 +6,13 @@ export class Day {
     private readonly day: number,
   ) {}
 
+  isBefore(other: Day) {
+    return (
+      this.month.isBefore(other.month) ||
+      (this.month.isEqual(other.month) && this.day < other.day)
+    );
+  }
+
   get name() {
     return `${this.day.toString().padStart(2, "0")}/${this.month.name}`;
   }

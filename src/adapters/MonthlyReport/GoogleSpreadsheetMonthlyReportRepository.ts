@@ -6,7 +6,8 @@ import {
 import { DailyReport } from "../../DailyReport";
 import { Month } from "../../Month";
 import { MonthlyReport } from "../../MonthlyReport";
-import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
+import { BasePrices } from "../BasePrices/BasePricesFinder";
+import { MonthlyReportRepository } from "./MonthlyReportRepository";
 import { RowBuilder } from "./RowBuilder";
 
 class MonthlyReportAlreadyExists extends Error {
@@ -99,7 +100,7 @@ export class GoogleSpreadsheetMonthlyReportRepository
     }
   }
 
-  async create(report: MonthlyReport, basePrices: BasePrices) {
+  async create(report: MonthlyReport, basePricesList: BasePrices[]) {
     const doc = await this.loadDocument();
 
     if (doc.sheetsByTitle[report.name]) {
@@ -113,6 +114,7 @@ export class GoogleSpreadsheetMonthlyReportRepository
       tabColor: TAB_COLOR,
     });
 
+    const basePrices = basePricesList[0]; // TODO
     const basePricesA1Mapping = await this.addBasePrices(
       sheet,
       report,
@@ -167,7 +169,10 @@ export class GoogleSpreadsheetMonthlyReportRepository
     });
   }
 
-  async store(dailyReport: DailyReport): Promise<void> {
+  async store(
+    dailyReport: DailyReport,
+    _basePrices: BasePrices, // TODO use it
+  ): Promise<void> {
     const sheet = await this.loadSheet(dailyReport);
     const row = await this.findRow(sheet, dailyReport);
     if (!row) {
