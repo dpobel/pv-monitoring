@@ -239,7 +239,6 @@ export class GoogleSpreadsheetMonthlyReportRepository
       basePricesList,
     );
     for (const mapping of basePricesA1Mapping) {
-      // TODO no loop
       await sheet.loadCells(Object.values(mapping.a1));
     }
     for (const mapping of basePricesA1Mapping) {
