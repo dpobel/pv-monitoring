@@ -1,9 +1,10 @@
+import { DailyReport } from "../DailyReport";
+import { Day } from "../Day";
+import { BasePricesFinder } from "../adapters/BasePrices/BasePricesFinder";
 import { ElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/ElectricityConsumptionFetcher";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 import { ProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/ProducedSolarEnergyFetcher";
 import { SoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/SoldSolarEnergyFetcher";
-import { DailyReport } from "../DailyReport";
-import { Day } from "../Day";
 
 export class FillDailyReportCommand {
   constructor(public readonly day: Day) {}
@@ -19,6 +20,7 @@ export class FillDailyReport implements FillDailyReportInterface {
     private readonly producedSolarEnergyFetcher: ProducedSolarEnergyFetcher,
     private readonly soldSolarEnergyFetcher: SoldSolarEnergyFetcher,
     private readonly monthlyReportRepository: MonthlyReportRepository,
+    private readonly basePricesFinder: BasePricesFinder,
   ) {}
 
   async execute(command: FillDailyReportCommand) {
@@ -29,6 +31,9 @@ export class FillDailyReport implements FillDailyReportInterface {
       await this.producedSolarEnergyFetcher.fetch(command.day),
       await this.soldSolarEnergyFetcher.fetch(command.day),
     );
-    this.monthlyReportRepository.store(dailyReport);
+    this.monthlyReportRepository.store(dailyReport, {
+      month: this.basePricesFinder.findForMonth(command.day.month),
+      day: this.basePricesFinder.findForDay(command.day),
+    });
   }
 }

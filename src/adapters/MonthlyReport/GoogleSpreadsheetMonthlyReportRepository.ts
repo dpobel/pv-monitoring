@@ -4,9 +4,11 @@ import {
   GoogleSpreadsheetWorksheet,
 } from "google-spreadsheet";
 import { DailyReport } from "../../DailyReport";
+import { Day } from "../../Day";
 import { Month } from "../../Month";
 import { MonthlyReport } from "../../MonthlyReport";
-import { BasePrices, MonthlyReportRepository } from "./MonthlyReportRepository";
+import { BasePrices } from "../BasePrices/BasePricesFinder";
+import { MonthlyReportRepository } from "./MonthlyReportRepository";
 import { RowBuilder } from "./RowBuilder";
 
 class MonthlyReportAlreadyExists extends Error {
@@ -99,7 +101,7 @@ export class GoogleSpreadsheetMonthlyReportRepository
     }
   }
 
-  async create(report: MonthlyReport, basePrices: BasePrices) {
+  async create(report: MonthlyReport, basePricesList: BasePrices[]) {
     const doc = await this.loadDocument();
 
     if (doc.sheetsByTitle[report.name]) {
@@ -113,10 +115,10 @@ export class GoogleSpreadsheetMonthlyReportRepository
       tabColor: TAB_COLOR,
     });
 
-    const basePricesA1Mapping = await this.addBasePrices(
+    const basePricesA1Mapping = await this.addBasePricesList(
       sheet,
       report,
-      basePrices,
+      basePricesList,
     );
 
     await this.setHeaderRowStyle(sheet);
@@ -124,7 +126,13 @@ export class GoogleSpreadsheetMonthlyReportRepository
     let rowIndex = HEADER_ROW_INDEX + 1;
     for (const dailyReport of report.dailyReports) {
       await sheet.addRow(
-        this.rowBuilder.buildRow(dailyReport, rowIndex, basePricesA1Mapping),
+        this.rowBuilder.buildRow(
+          dailyReport,
+          rowIndex,
+          // TODO: for simplicity, we use the first one on all rows, even if that's wrong
+          // but to fill 0, that's fine.
+          basePricesA1Mapping[0].a1,
+        ),
       );
       rowIndex++;
     }
@@ -167,17 +175,25 @@ export class GoogleSpreadsheetMonthlyReportRepository
     });
   }
 
-  async store(dailyReport: DailyReport): Promise<void> {
+  async store(
+    dailyReport: DailyReport,
+    basePrices: { month: BasePrices[]; day: BasePrices },
+  ): Promise<void> {
     const sheet = await this.loadSheet(dailyReport);
     const row = await this.findRow(sheet, dailyReport);
     if (!row) {
       throw new DailyReportRowNotFound(dailyReport);
     }
-    const basePricesA1Mapping = this.getBasePricesA1Mapping(
-      dailyReport.day.month,
+    const basePricesA1Mapping = await this.findBasePricesA1Mapping(
+      basePrices,
+      dailyReport.day,
     );
     row.assign(
-      this.rowBuilder.buildRow(dailyReport, row.rowNumber, basePricesA1Mapping),
+      this.rowBuilder.buildRow(
+        dailyReport,
+        row.rowNumber,
+        basePricesA1Mapping.a1,
+      ),
     );
     await row.save();
     await sheet.loadCells({ startRowIndex: row.rowNumber - 1 });
@@ -185,10 +201,25 @@ export class GoogleSpreadsheetMonthlyReportRepository
     await sheet.saveUpdatedCells();
   }
 
-  private async addBasePrices(
+  private async findBasePricesA1Mapping(
+    basePrices: { month: BasePrices[]; day: BasePrices },
+    day: Day,
+  ) {
+    const month = day.month;
+    const label = basePrices.day.label;
+    const monthMapping = this.buildBasePricesA1Mapping(month, basePrices.month);
+
+    return (
+      monthMapping.find((mapping) => {
+        return mapping.basePrices.label === label;
+      }) || monthMapping[0]
+    );
+  }
+
+  private async addBasePricesList(
     sheet: GoogleSpreadsheetWorksheet,
     report: MonthlyReport,
-    basePrices: BasePrices,
+    basePricesList: BasePrices[],
   ) {
     const fillLabelCell = (a1: string, label: string) => {
       const cell = sheet.getCellByA1(a1);
@@ -203,31 +234,44 @@ export class GoogleSpreadsheetMonthlyReportRepository
       cell.numberValue = value;
     };
 
-    const basePricesA1Mapping = this.getBasePricesA1Mapping(report.month);
-    await sheet.loadCells(Object.values(basePricesA1Mapping));
-    fillLabelCell(basePricesA1Mapping.offPeakHoursLabel, "Prix HC/kwh");
-    fillValueCell(basePricesA1Mapping.offPeakHours, basePrices.offPeakHours);
-    fillLabelCell(basePricesA1Mapping.peakHoursLabel, "Prix HP/kwh");
-    fillValueCell(basePricesA1Mapping.peakHours, basePrices.peakHours);
-    fillLabelCell(basePricesA1Mapping.solarLabel, "Prix revente/kwh");
-    fillValueCell(basePricesA1Mapping.solar, basePrices.solar);
+    const basePricesA1Mapping = this.buildBasePricesA1Mapping(
+      report.month,
+      basePricesList,
+    );
+    for (const mapping of basePricesA1Mapping) {
+      await sheet.loadCells(Object.values(mapping.a1));
+    }
+    for (const mapping of basePricesA1Mapping) {
+      fillLabelCell(mapping.a1.label, mapping.basePrices.label);
+      fillLabelCell(mapping.a1.offPeakHoursLabel, "Prix HC/kwh");
+      fillValueCell(mapping.a1.offPeakHours, mapping.basePrices.offPeakHours);
+      fillLabelCell(mapping.a1.peakHoursLabel, "Prix HP/kwh");
+      fillValueCell(mapping.a1.peakHours, mapping.basePrices.peakHours);
+      fillLabelCell(mapping.a1.solarLabel, "Prix revente/kwh");
+      fillValueCell(mapping.a1.solar, mapping.basePrices.solar);
+    }
     await sheet.saveUpdatedCells();
 
     return basePricesA1Mapping;
   }
 
-  private getBasePricesA1Mapping(month: Month) {
+  private buildBasePricesA1Mapping(month: Month, basePricesList: BasePrices[]) {
     const days = month.dayNumber;
     // days + header + total + empty line + 1-based index
-    const index = days + 1 + 1 + 1 + 1;
-    return {
-      offPeakHoursLabel: `A${index}`,
-      offPeakHours: `B${index}`,
-      peakHoursLabel: `C${index}`,
-      peakHours: `D${index}`,
-      solarLabel: `E${index}`,
-      solar: `F${index}`,
-    };
+    let index = days + 1 + 1 + 1 + 1;
+    return basePricesList.map((basePrices) => {
+      const a1 = {
+        offPeakHoursLabel: `A${index}`,
+        offPeakHours: `B${index}`,
+        peakHoursLabel: `C${index}`,
+        peakHours: `D${index}`,
+        solarLabel: `E${index}`,
+        solar: `F${index}`,
+        label: `G${index}`,
+      };
+      index++;
+      return { a1, basePrices };
+    });
   }
 
   private async addTotalRow(

@@ -3,6 +3,29 @@ import { describe, it } from "node:test";
 import { Month } from "./Month";
 
 describe("Month", () => {
+  describe("isEqual", () => {
+    it("should compare two months", () => {
+      const nov2024 = new Month(11, 2024);
+      const dec2024 = new Month(12, 2024);
+      const nov2023 = new Month(11, 2023);
+      assert.ok(nov2024.isEqual(nov2024));
+      assert.ok(!nov2024.isEqual(dec2024));
+      assert.ok(!nov2024.isEqual(nov2023));
+    });
+  });
+
+  describe("isBefore", () => {
+    it("should compare two months", () => {
+      const nov2024 = new Month(11, 2024);
+      const dec2024 = new Month(12, 2024);
+      const nov2023 = new Month(11, 2023);
+      assert.ok(nov2023.isBefore(nov2024));
+      assert.ok(nov2024.isBefore(dec2024));
+      assert.ok(!nov2024.isBefore(nov2023));
+      assert.ok(!nov2024.isBefore(nov2024));
+    });
+  });
+
   describe("reportName", () => {
     it("should build a human readable report name", () => {
       const month = new Month(1, 2024);

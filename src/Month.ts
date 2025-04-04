@@ -20,6 +20,17 @@ export class Month {
     public readonly year: number,
   ) {}
 
+  isEqual(other: Month) {
+    return this.year === other.year && this.month === other.month;
+  }
+
+  isBefore(other: Month) {
+    return (
+      this.year < other.year ||
+      (this.year === other.year && this.month < other.month)
+    );
+  }
+
   get reportName() {
     return `Relevé ${this.name}`;
   }
