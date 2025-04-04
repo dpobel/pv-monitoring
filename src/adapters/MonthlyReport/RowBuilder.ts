@@ -18,6 +18,8 @@ const HEADERS = {
   "Gain vente": "N",
   "Gain total": "O",
   "Autocons.": "P",
+  "Total cons.": "Q",
+  "Comp. an-1": "R",
 };
 
 type Formula = string;
@@ -39,6 +41,8 @@ type Row = {
   "Gain vente": Formula;
   "Gain total": Formula;
   "Autocons.": Formula;
+  "Total cons.": Formula;
+  "Comp. an-1": Formula;
 };
 
 type TotalRow = {
@@ -58,6 +62,8 @@ type TotalRow = {
   "Gain vente": Formula;
   "Gain total": Formula;
   "Autocons.": Formula;
+  "Total cons.": Formula;
+  "Comp. an-1": Formula;
 };
 
 type RowName =
@@ -76,7 +82,9 @@ type RowName =
   | "Qté vendue"
   | "Gain vente"
   | "Gain total"
-  | "Autocons.";
+  | "Autocons."
+  | "Total cons."
+  | "Comp. an-1";
 
 export class RowBuilder {
   getHeaders() {
@@ -135,6 +143,12 @@ export class RowBuilder {
         rowIndex,
       )}+${this.getA1Notation("Gain vente", rowIndex)}`,
       "Autocons.": this.getAutoconsumptionFormula(rowIndex),
+      "Total cons.": `=${this.getA1Notation("Total", rowIndex)}+(${this.getA1Notation("Production PV", rowIndex)}-${this.getA1Notation("Qté vendue", rowIndex)})`,
+      "Comp. an-1": this.getEvolutionFormula(
+        "Total an-1",
+        "Total cons.",
+        rowIndex,
+      ),
     };
   }
 
@@ -257,6 +271,16 @@ export class RowBuilder {
         latestRowValueIndex,
       ),
       "Autocons.": this.getAutoconsumptionFormula(totalRowValueIndex),
+      "Total cons.": this.getSumColumnFormula(
+        "Total cons.",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Comp. an-1": this.getEvolutionFormula(
+        "Total an-1",
+        "Total cons.",
+        totalRowValueIndex,
+      ),
     };
   }
 }
