@@ -11,14 +11,17 @@ export class MemoryMonthlyReportRepository implements MonthlyReportRepository {
 
   public readonly dailyReports: {
     dailyReport: DailyReport;
-    basePrices: BasePrices;
+    basePrices: { month: BasePrices[]; day: BasePrices };
   }[] = [];
 
   async create(report: MonthlyReport, basePricesList: BasePrices[]) {
     this.createData.push({ report, basePricesList });
   }
 
-  async store(dailyReport: DailyReport, basePrices: BasePrices) {
+  async store(
+    dailyReport: DailyReport,
+    basePrices: { month: BasePrices[]; day: BasePrices },
+  ) {
     this.dailyReports.push({ dailyReport, basePrices });
   }
 }

@@ -31,9 +31,9 @@ export class FillDailyReport implements FillDailyReportInterface {
       await this.producedSolarEnergyFetcher.fetch(command.day),
       await this.soldSolarEnergyFetcher.fetch(command.day),
     );
-    this.monthlyReportRepository.store(
-      dailyReport,
-      this.basePricesFinder.findForDay(command.day),
-    );
+    this.monthlyReportRepository.store(dailyReport, {
+      month: this.basePricesFinder.findForMonth(command.day.month),
+      day: this.basePricesFinder.findForDay(command.day),
+    });
   }
 }

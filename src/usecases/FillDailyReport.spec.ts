@@ -49,7 +49,10 @@ describe("FillDailyReport", () => {
         producedSolarEnergy,
         soldSolarEnergy,
       ),
-      basePrices: basePricesFinder.findForDay(day),
+      basePrices: {
+        month: basePricesFinder.findForMonth(day.month),
+        day: basePricesFinder.findForDay(day),
+      },
     });
   });
 });

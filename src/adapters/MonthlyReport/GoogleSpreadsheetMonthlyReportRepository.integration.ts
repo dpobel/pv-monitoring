@@ -54,6 +54,28 @@ describe(
 
     describe("store", () => {
       const month = new Month(11, 2024);
+      const basePrices = {
+        month: [
+          {
+            label: "Test base prices 2",
+            offPeakHours: 0.01,
+            peakHours: 0.02,
+            solar: 0.03,
+          },
+          {
+            label: "Test base prices",
+            offPeakHours: 0.1,
+            peakHours: 0.2,
+            solar: 0.3,
+          },
+        ],
+        day: {
+          label: "Test base prices",
+          offPeakHours: 0.1,
+          peakHours: 0.2,
+          solar: 0.3,
+        },
+      };
 
       beforeEach(async () => {
         doc.resetLocalCache();
@@ -71,12 +93,7 @@ describe(
             new ProducedSolarEnergy(1313),
             new SoldSolarEnergy(1717),
           ),
-          {
-            label: "Test base prices",
-            offPeakHours: 0.1,
-            peakHours: 0.2,
-            solar: 0.3,
-          },
+          basePrices,
         );
         doc.resetLocalCache();
         await doc.loadInfo();
@@ -108,7 +125,11 @@ describe(
         assert.equal(lines[month.dayNumber + 2].trim(), ",,,,,,,,,,,,,,,");
         assert.equal(
           lines[month.dayNumber + 3].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,,,',
+          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2,,,,,,,,,',
+        );
+        assert.equal(
+          lines[month.dayNumber + 4].trim(),
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices,,,,,,,,,',
         );
       });
     });
@@ -139,12 +160,18 @@ describe(
             peakHours: 0.2,
             solar: 0.3,
           },
+          {
+            label: "Test base prices 2",
+            offPeakHours: 0.01,
+            peakHours: 0.02,
+            solar: 0.03,
+          },
         ]);
         await doc.loadInfo();
         const sheet = doc.sheetsByTitle[report.name];
         const csvStream = await sheet.downloadAsCSV();
         const lines = csvStream.toString().split("\n");
-        assert.equal(lines.length, report.month.dayNumber + 4);
+        assert.equal(lines.length, report.month.dayNumber + 5);
         assert.equal(
           lines[0].trim(),
           "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.",
@@ -173,7 +200,11 @@ describe(
         );
         assert.equal(
           lines[report.month.dayNumber + 3].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",,,,,,,,,,',
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices,,,,,,,,,',
+        );
+        assert.equal(
+          lines[report.month.dayNumber + 4].trim(),
+          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2,,,,,,,,,',
         );
       });
     });
