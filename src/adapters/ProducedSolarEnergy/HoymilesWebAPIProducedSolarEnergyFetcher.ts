@@ -59,24 +59,16 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
     try {
       this.logger.info(`Generating a token for ${this.config.username}`);
       const response = await fetch(
-        "https://global.hoymiles.com/platform/api/gateway/iam/auth_login",
+        "https://neapi.hoymiles.com/iam/pub/0/auth/login",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "User-Agent": USER_AGENT,
-            Cookie: "hm_token_language=en_us",
           },
           body: JSON.stringify({
-            body: {
-              password: `wtf-hash.${this.hashPassword(this.config.password)}`,
-              user_name: this.config.username,
-            },
-            ERROR_BACK: true,
-            LOAD: {
-              loading: true,
-            },
-            WAITING_PROMISE: true,
+            password: `${this.hashPassword(this.config.password)}`,
+            user_name: this.config.username,
           }),
         },
       );
@@ -99,23 +91,20 @@ export class HoymilesWebAPIProducedSolarEnergyFetcher
     const token = await this.generateToken();
     try {
       const query = {
-        WAITING_PROMISE: false,
-        body: {
-          sid_list: [this.config.plantId],
-          mode: 1,
-          start_date: day.YYYYMMDD,
-          end_date: day.YYYYMMDD,
-        },
+        sid_list: [this.config.plantId],
+        mode: 1,
+        start_date: day.YYYYMMDD,
+        end_date: day.YYYYMMDD,
       };
       this.logger.info(`Fetching production for ${day.name}`, query);
       const response = await fetch(
-        "https://global.hoymiles.com/platform/api/gateway/pvm-report/report_count_eq_by_station",
+        "https://neapi.hoymiles.com/pvm-report/api/0/station/report/count_eq_by_station",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "User-Agent": USER_AGENT,
-            Cookie: `hm_token=${token};hm_token_language=en_us`,
+            Authorization: token,
           },
           body: JSON.stringify(query),
         },
