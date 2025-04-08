@@ -31,8 +31,8 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
 
     describe("when the authentication fails", () => {
       beforeEach(() => {
-        nock("https://global.hoymiles.com")
-          .post("/platform/api/gateway/iam/auth_login")
+        nock("https://neapi.hoymiles.com")
+          .post("/iam/pub/0/auth/login")
           .reply(200, {
             status: "1",
             message: "whatever error",
@@ -49,8 +49,8 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
       const token = "a-token";
 
       beforeEach(() => {
-        nock("https://global.hoymiles.com")
-          .post("/platform/api/gateway/iam/auth_login")
+        nock("https://neapi.hoymiles.com")
+          .post("/iam/pub/0/auth/login")
           .reply(200, {
             status: "0",
             message: "success",
@@ -60,20 +60,20 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
 
       describe("when the api returns a produced energy", () => {
         beforeEach(() => {
-          nock("https://global.hoymiles.com", {
+          nock("https://neapi.hoymiles.com", {
             reqheaders: {
-              Cookie: (value) => {
-                return value.includes(`hm_token=${token}`);
+              Authorization: (value) => {
+                return value === token;
               },
             },
           })
             .post(
-              "/platform/api/gateway/pvm-report/report_count_eq_by_station",
+              "/pvm-report/api/0/station/report/count_eq_by_station",
               (query) => {
                 return (
-                  query.body.sid_list.join(",") === plantId &&
-                  query.body.start_date === day.YYYYMMDD &&
-                  query.body.end_date === day.YYYYMMDD
+                  query.sid_list.join(",") === plantId &&
+                  query.start_date === day.YYYYMMDD &&
+                  query.end_date === day.YYYYMMDD
                 );
               },
             )
@@ -99,8 +99,8 @@ describe("HoymilesWebAPIProducedSolarEnergyFetcher", () => {
 
       describe("when the api fails", () => {
         beforeEach(() => {
-          nock("https://global.hoymiles.com")
-            .post("/platform/api/gateway/pvm-report/report_count_eq_by_station")
+          nock("https://neapi.hoymiles.com")
+            .post("/pvm-report/api/0/station/report/count_eq_by_station")
             .reply(200, {
               status: "1",
               message: "whatever error",
