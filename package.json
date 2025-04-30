@@ -33,7 +33,7 @@
     "google-spreadsheet": "^4.1.4",
     "linky": "^2.1.1",
     "minimist": "^1.2.8",
-    "tsx": "^4.19.3"
+    "tsx": "^4.19.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
