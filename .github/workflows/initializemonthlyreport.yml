@@ -18,7 +18,7 @@ jobs:
       CONSO_API_TOKEN: ${{ secrets.CONSO_API_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
