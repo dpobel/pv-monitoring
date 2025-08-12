@@ -63,9 +63,9 @@ describe("GenuineBasePricesFinder", () => {
       ]);
     });
 
-    it("should return base prices list for months after March 2025", () => {
+    it("should return base prices list for months after March 2025 and before August 2025", () => {
       const apr2025 = new Month(6, 2025);
-      const aug2025 = new Month(8, 2025);
+      const july2025 = new Month(7, 2025);
       const basePricesList1 = sut.findForMonth(apr2025);
       assert.deepEqual(basePricesList1, [
         {
@@ -75,12 +75,57 @@ describe("GenuineBasePricesFinder", () => {
           solar: 0.1269,
         },
       ]);
-      const basePricesList2 = sut.findForMonth(aug2025);
+      const basePricesList2 = sut.findForMonth(july2025);
       assert.deepEqual(basePricesList2, [
         {
           label: "Après le 14 mars 2025",
           offPeakHours: 0.1727,
           peakHours: 0.2124,
+          solar: 0.1269,
+        },
+      ]);
+    });
+
+    it("should return base prices list for August 2025", () => {
+      const aug2025 = new Month(8, 2025);
+      const basePricesList = sut.findForMonth(aug2025);
+      assert.deepEqual(basePricesList, [
+        {
+          label: "Après le 1er août 2025",
+          offPeakHours: 0.1682,
+          peakHours: 0.2079,
+          solar: 0.1269,
+        },
+      ]);
+    });
+
+    it("should return base prices list for September 2025", () => {
+      const sep2025 = new Month(9, 2025);
+      const basePricesList = sut.findForMonth(sep2025);
+      assert.deepEqual(basePricesList, [
+        {
+          label: "Après le 1er août 2025",
+          offPeakHours: 0.1682,
+          peakHours: 0.2079,
+          solar: 0.1269,
+        },
+        {
+          label: "Après le 15 septembre 2025",
+          offPeakHours: 0.1637,
+          peakHours: 0.2082,
+          solar: 0.1269,
+        },
+      ]);
+    });
+
+    it("should return base prices list for months after September 2025", () => {
+      const oct2025 = new Month(10, 2025);
+      const basePricesList1 = sut.findForMonth(oct2025);
+      assert.deepEqual(basePricesList1, [
+        {
+          label: "Après le 15 septembre 2025",
+          offPeakHours: 0.1637,
+          peakHours: 0.2082,
           solar: 0.1269,
         },
       ]);
@@ -134,7 +179,7 @@ describe("GenuineBasePricesFinder", () => {
       });
     });
 
-    it("should return base prices for days after 2025-03-14", () => {
+    it("should return base prices for days after 2025-03-14 and before 2025-08-01", () => {
       const day1 = new Day(new Month(3, 2025), 14);
       const day2 = new Day(new Month(6, 2025), 13);
       const basePrices1 = sut.findForDay(day1);
@@ -149,6 +194,63 @@ describe("GenuineBasePricesFinder", () => {
         label: "Après le 14 mars 2025",
         offPeakHours: 0.1727,
         peakHours: 0.2124,
+        solar: 0.1269,
+      });
+    });
+
+    it("should return base prices for days in August 2025", () => {
+      const day1 = new Day(new Month(8, 2025), 1);
+      const day2 = new Day(new Month(8, 2025), 15);
+      const basePrices1 = sut.findForDay(day1);
+      assert.deepEqual(basePrices1, {
+        label: "Après le 1er août 2025",
+        offPeakHours: 0.1682,
+        peakHours: 0.2079,
+        solar: 0.1269,
+      });
+      const basePrices2 = sut.findForDay(day2);
+      assert.deepEqual(basePrices2, {
+        label: "Après le 1er août 2025",
+        offPeakHours: 0.1682,
+        peakHours: 0.2079,
+        solar: 0.1269,
+      });
+    });
+
+    it("should return base prices for days in September 2025", () => {
+      const day1 = new Day(new Month(9, 2025), 1);
+      const day2 = new Day(new Month(9, 2025), 15);
+      const basePrices1 = sut.findForDay(day1);
+      assert.deepEqual(basePrices1, {
+        label: "Après le 1er août 2025",
+        offPeakHours: 0.1682,
+        peakHours: 0.2079,
+        solar: 0.1269,
+      });
+      const basePrices2 = sut.findForDay(day2);
+      assert.deepEqual(basePrices2, {
+        label: "Après le 15 septembre 2025",
+        offPeakHours: 0.1637,
+        peakHours: 0.2082,
+        solar: 0.1269,
+      });
+    });
+
+    it("should return base prices for days after 2025-09-15", () => {
+      const day1 = new Day(new Month(10, 2025), 1);
+      const day2 = new Day(new Month(11, 2025), 17);
+      const basePrices1 = sut.findForDay(day1);
+      assert.deepEqual(basePrices1, {
+        label: "Après le 15 septembre 2025",
+        offPeakHours: 0.1637,
+        peakHours: 0.2082,
+        solar: 0.1269,
+      });
+      const basePrices2 = sut.findForDay(day2);
+      assert.deepEqual(basePrices2, {
+        label: "Après le 15 septembre 2025",
+        offPeakHours: 0.1637,
+        peakHours: 0.2082,
         solar: 0.1269,
       });
     });
