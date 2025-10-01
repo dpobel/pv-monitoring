@@ -29,7 +29,7 @@
   "homepage": "https://github.com/dpobel/pv-monitoring#readme",
   "dependencies": {
     "dotenv": "^17.2.3",
-    "google-auth-library": "^9.15.1",
+    "google-auth-library": "^10.4.0",
     "google-spreadsheet": "^4.1.5",
     "linky": "^2.1.1",
     "minimist": "^1.2.8",
