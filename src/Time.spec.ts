@@ -36,4 +36,18 @@ describe("Time", () => {
       assert.equal(eightAnd1Second.isEqualTo(eightAnd1Second), true);
     });
   });
+
+  describe("addMinutes", () => {
+    it("should add minutes to a Time instance", () => {
+      const time = new Time(10, 15, 12);
+      const newTime = time.addMinutes(30);
+      assert(newTime.isEqualTo(new Time(10, 45, 12)));
+    });
+
+    it("should handle hour overflow when adding minutes", () => {
+      const time = new Time(23, 50, 0);
+      const newTime = time.addMinutes(20);
+      assert(newTime.isEqualTo(new Time(0, 10, 0)));
+    });
+  });
 });
