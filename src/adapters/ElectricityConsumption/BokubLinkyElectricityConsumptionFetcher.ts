@@ -78,9 +78,8 @@ export class BokubLinkyElectricityConsumptionFetcher {
         error.isDayLightSavingTime()
       ) {
         return new TimeSlot(startTime, startTime.addMinutes(30));
-      } else {
-        throw error;
       }
+      throw error;
     }
   }
 
