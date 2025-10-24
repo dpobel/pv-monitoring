@@ -1,14 +1,9 @@
-import { warn } from "node:console";
 import { Session as LinkyClient } from "linky";
 import { Day } from "../../Day";
 import { ElectricityConsumption } from "../../ElectricityConsumption";
 import { PeakHoursSchedule } from "../../PeakHoursSchedule";
 import { Time } from "../../Time";
-import {
-  InvalidTimeSlotEndNotAfterStart,
-  InvalidTimeSlotSameStartAndEnd,
-  TimeSlot,
-} from "../../TimeSlot";
+import { InvalidTimeSlotSameStartAndEnd, TimeSlot } from "../../TimeSlot";
 import { Logger } from "../Logger/Logger";
 
 export class FailToFetchElectricityConsumption extends Error {
