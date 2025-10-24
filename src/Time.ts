@@ -37,9 +37,6 @@ export class Time {
     const totalMinutes = this.hour * 60 + this.minute + minutesToAdd;
     const newHour = Math.floor(totalMinutes / 60) % 24;
     const newMinute = totalMinutes % 60;
-    if (newHour === 0 && newMinute === 0 && this.second === 0) {
-      return new Time(23, 59, 59);
-    }
     return new Time(newHour, newMinute, this.second);
   }
 
