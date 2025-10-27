@@ -37,6 +37,7 @@ export class FillDailyReportCliCommand implements CliCommand {
     } catch (error) {
       this.logger.error(
         error instanceof Error ? error.message : JSON.stringify(error),
+        { error },
       );
       return 101;
     }

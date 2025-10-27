@@ -1,14 +1,21 @@
-import { Session as LinkyClient } from "linky";
+import { APIError, Session as LinkyClient } from "linky";
 import { Day } from "../../Day";
 import { SoldSolarEnergy } from "../../SoldSolarEnergy";
 import { Logger } from "../Logger/Logger";
 import { SoldSolarEnergyFetcher } from "./SoldSolarEnergyFetcher";
 
 export class FailToFetchSoldSolarEnergy extends Error {
+  public readonly responseMessage: unknown;
+  public readonly responseError: unknown;
+
   constructor(day: Day, error: Error) {
     super(`Fail to fetch sold solar energy for ${day}: ${error.message}`, {
       cause: error,
     });
+    if (error instanceof APIError) {
+      this.responseMessage = error.response.message;
+      this.responseError = error.response.error;
+    }
   }
 }
 

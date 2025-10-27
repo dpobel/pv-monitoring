@@ -1,6 +1,6 @@
-import { Logger } from "../adapters/Logger/Logger";
 import { Day } from "../Day";
 import { Month } from "../Month";
+import { Logger } from "../adapters/Logger/Logger";
 import {
   FillDailyReportCommand,
   FillDailyReportInterface,
@@ -29,6 +29,7 @@ export class FillYesterdayReportCliCommand implements CliCommand {
     } catch (error) {
       this.logger.error(
         error instanceof Error ? error.message : JSON.stringify(error),
+        { error },
       );
       return 102;
     }
