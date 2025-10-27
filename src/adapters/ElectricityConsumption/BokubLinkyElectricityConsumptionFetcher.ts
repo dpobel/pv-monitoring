@@ -1,4 +1,4 @@
-import { Session as LinkyClient } from "linky";
+import { APIError, Session as LinkyClient } from "linky";
 import { Day } from "../../Day";
 import { ElectricityConsumption } from "../../ElectricityConsumption";
 import { PeakHoursSchedule } from "../../PeakHoursSchedule";
@@ -7,11 +7,18 @@ import { InvalidTimeSlotSameStartAndEnd, TimeSlot } from "../../TimeSlot";
 import { Logger } from "../Logger/Logger";
 
 export class FailToFetchElectricityConsumption extends Error {
+  public readonly responseMessage: unknown;
+  public readonly responseError: unknown;
+
   constructor(day: Day, error: Error) {
     super(
       `Fail to fetch electricity consumption for ${day}: ${error.message}`,
       { cause: error },
     );
+    if (error instanceof APIError) {
+      this.responseMessage = error.response.message;
+      this.responseError = error.response.error;
+    }
   }
 }
 
