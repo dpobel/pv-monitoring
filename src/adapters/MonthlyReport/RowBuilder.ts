@@ -156,9 +156,9 @@ export class RowBuilder {
       }/1000+${this.getA1Notation("HP", rowIndex)}*${
         basePricesA1Mapping.peakHours
       }/1000; 2)`,
-      Évolution: this.getEvolutionFormula("Total an-1", "Total", rowIndex),
+      Évolution: this.getEvolutionFormula("Total Référence", "Total", rowIndex),
       Économie: `=${this.getA1Notation(
-        "Prix an-1",
+        "Prix Référence",
         rowIndex,
       )}-${this.getA1Notation("Prix", rowIndex)}`,
       "Production PV": dailyReport.producedSolarEnergy.quantity,
