@@ -26,6 +26,9 @@ export class FillDailyReport implements FillDailyReportInterface {
   async execute(command: FillDailyReportCommand) {
     const dailyReport = new DailyReport(
       command.day,
+      await this.electricityConsumptionFetcher.fetch(
+        command.day.inReferenceYear,
+      ),
       await this.electricityConsumptionFetcher.fetch(command.day.minusAYear),
       await this.electricityConsumptionFetcher.fetch(command.day),
       await this.producedSolarEnergyFetcher.fetch(command.day),

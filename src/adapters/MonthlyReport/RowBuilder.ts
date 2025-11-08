@@ -3,29 +3,35 @@ import { MonthlyReport } from "../../MonthlyReport";
 
 const HEADERS = {
   Date: "A",
-  "HC an-1": "B",
-  "HP an-1": "C",
-  "Total an-1": "D",
-  "Prix an-1": "E",
-  HC: "F",
-  HP: "G",
-  Total: "H",
-  Prix: "I",
-  Évolution: "J",
-  Économie: "K",
-  "Production PV": "L",
-  "Qté vendue": "M",
-  "Gain vente": "N",
-  "Gain total": "O",
-  "Autocons.": "P",
-  "Total cons.": "Q",
-  "Comp. an-1": "R",
+  "HC Référence": "B",
+  "HP Référence": "C",
+  "Total Référence": "D",
+  "HC an-1": "E",
+  "HP an-1": "F",
+  "Total an-1": "G",
+  "Prix an-1": "H",
+  HC: "I",
+  HP: "J",
+  Total: "K",
+  Prix: "L",
+  Évolution: "M",
+  Économie: "N",
+  "Production PV": "O",
+  "Qté vendue": "P",
+  "Gain vente": "Q",
+  "Gain total": "R",
+  "Autocons.": "S",
+  "Total cons.": "T",
+  "Comp. an-1": "U",
 };
 
 type Formula = string;
 
 type Row = {
   Date: string;
+  "HC Référence": number;
+  "HP Référence": number;
+  "Total Référence": Formula;
   "HC an-1": number;
   "HP an-1": number;
   "Total an-1": Formula;
@@ -47,6 +53,9 @@ type Row = {
 
 type TotalRow = {
   Date: string;
+  "HC Référence": Formula;
+  "HP Référence": Formula;
+  "Total Référence": Formula;
   "HC an-1": Formula;
   "HP an-1": Formula;
   "Total an-1": Formula;
@@ -68,6 +77,9 @@ type TotalRow = {
 
 type RowName =
   | "Date"
+  | "HC Référence"
+  | "HP Référence"
+  | "Total Référence"
   | "HC an-1"
   | "HP an-1"
   | "Total an-1"
@@ -106,6 +118,13 @@ export class RowBuilder {
   ): Row {
     return {
       Date: dailyReport.day.name,
+      "HC Référence":
+        dailyReport.referenceYearElectricityConsumption.offPeakHours,
+      "HP Référence": dailyReport.referenceYearElectricityConsumption.peakHours,
+      "Total Référence": `=${this.getA1Notation(
+        "HC Référence",
+        rowIndex,
+      )}+${this.getA1Notation("HP Référence", rowIndex)}`,
       "HC an-1": dailyReport.previousYearElectricityConsumption.offPeakHours,
       "HP an-1": dailyReport.previousYearElectricityConsumption.peakHours,
       "Total an-1": `=${this.getA1Notation(
@@ -200,6 +219,21 @@ export class RowBuilder {
 
     return {
       Date: "Total",
+      "HC Référence": this.getSumColumnFormula(
+        "HC Référence",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "HP Référence": this.getSumColumnFormula(
+        "HP Référence",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Total Référence": this.getSumColumnFormula(
+        "Total Référence",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
       "HC an-1": this.getSumColumnFormula(
         "HC an-1",
         firstRowValueIndex,

@@ -39,6 +39,7 @@ export class MonthlyReport {
         day,
         new ElectricityConsumption(0, 0),
         new ElectricityConsumption(0, 0),
+        new ElectricityConsumption(0, 0),
         new ProducedSolarEnergy(0),
         new SoldSolarEnergy(0),
       );

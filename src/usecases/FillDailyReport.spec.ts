@@ -17,6 +17,7 @@ describe("FillDailyReport", () => {
   const day = new Day(new Month(11, 2024), 11);
   const previousYearDay = day.minusAYear;
 
+  const referenceYearConsumption = new ElectricityConsumption(20, 30);
   const previousYearConsumption = new ElectricityConsumption(40, 50);
   const consumption = new ElectricityConsumption(60, 70);
   const producedSolarEnergy = new ProducedSolarEnergy(120);
@@ -27,6 +28,7 @@ describe("FillDailyReport", () => {
   const sut = new FillDailyReport(
     new MemoryElectricityConsumptionFetcher(
       new Map<string, ElectricityConsumption>([
+        [day.inReferenceYear.name, referenceYearConsumption],
         [previousYearDay.name, previousYearConsumption],
         [day.name, consumption],
       ]),
@@ -44,6 +46,7 @@ describe("FillDailyReport", () => {
     assert.deepEqual(repository.dailyReports[0], {
       dailyReport: new DailyReport(
         day,
+        referenceYearConsumption,
         previousYearConsumption,
         consumption,
         producedSolarEnergy,

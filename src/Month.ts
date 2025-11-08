@@ -46,8 +46,8 @@ export class Month {
     });
   }
 
-  get minusAYear() {
-    return new Month(this.month, this.year - 1);
+  minusYears(number: number) {
+    return new Month(this.month, this.year - number);
   }
 
   get next() {
