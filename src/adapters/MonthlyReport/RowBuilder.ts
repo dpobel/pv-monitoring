@@ -6,23 +6,24 @@ const HEADERS = {
   "HC Référence": "B",
   "HP Référence": "C",
   "Total Référence": "D",
-  "HC an-1": "E",
-  "HP an-1": "F",
-  "Total an-1": "G",
-  "Prix an-1": "H",
-  HC: "I",
-  HP: "J",
-  Total: "K",
-  Prix: "L",
-  Évolution: "M",
-  Économie: "N",
-  "Production PV": "O",
-  "Qté vendue": "P",
-  "Gain vente": "Q",
-  "Gain total": "R",
-  "Autocons.": "S",
-  "Total cons.": "T",
-  "Comp. an-1": "U",
+  "Prix Référence": "E",
+  "HC an-1": "F",
+  "HP an-1": "G",
+  "Total an-1": "H",
+  "Prix an-1": "I",
+  HC: "J",
+  HP: "K",
+  Total: "L",
+  Prix: "M",
+  Évolution: "N",
+  Économie: "O",
+  "Production PV": "P",
+  "Qté vendue": "Q",
+  "Gain vente": "R",
+  "Gain total": "S",
+  "Autocons.": "T",
+  "Total cons.": "U",
+  "Comp. an-1": "V",
 };
 
 type Formula = string;
@@ -32,6 +33,7 @@ type Row = {
   "HC Référence": number;
   "HP Référence": number;
   "Total Référence": Formula;
+  "Prix Référence": Formula;
   "HC an-1": number;
   "HP an-1": number;
   "Total an-1": Formula;
@@ -56,6 +58,7 @@ type TotalRow = {
   "HC Référence": Formula;
   "HP Référence": Formula;
   "Total Référence": Formula;
+  "Prix Référence": Formula;
   "HC an-1": Formula;
   "HP an-1": Formula;
   "Total an-1": Formula;
@@ -80,6 +83,7 @@ type RowName =
   | "HC Référence"
   | "HP Référence"
   | "Total Référence"
+  | "Prix Référence"
   | "HC an-1"
   | "HP an-1"
   | "Total an-1"
@@ -125,6 +129,11 @@ export class RowBuilder {
         "HC Référence",
         rowIndex,
       )}+${this.getA1Notation("HP Référence", rowIndex)}`,
+      "Prix Référence": `=ROUND(${this.getA1Notation("HC Référence", rowIndex)}*${
+        basePricesA1Mapping.offPeakHours
+      }/1000+${this.getA1Notation("HP Référence", rowIndex)}*${
+        basePricesA1Mapping.peakHours
+      }/1000;2)`,
       "HC an-1": dailyReport.previousYearElectricityConsumption.offPeakHours,
       "HP an-1": dailyReport.previousYearElectricityConsumption.peakHours,
       "Total an-1": `=${this.getA1Notation(
@@ -231,6 +240,11 @@ export class RowBuilder {
       ),
       "Total Référence": this.getSumColumnFormula(
         "Total Référence",
+        firstRowValueIndex,
+        latestRowValueIndex,
+      ),
+      "Prix Référence": this.getSumColumnFormula(
+        "Prix Référence",
         firstRowValueIndex,
         latestRowValueIndex,
       ),
