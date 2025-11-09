@@ -289,7 +289,7 @@ export class RowBuilder {
         latestRowValueIndex,
       ),
       Évolution: this.getEvolutionFormula(
-        "Total an-1",
+        "Total Référence",
         "Total",
         totalRowValueIndex,
       ),
