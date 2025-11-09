@@ -1,7 +1,10 @@
 import { Day } from "../../Day";
 import { ElectricityConsumption } from "../../ElectricityConsumption";
+import { ElectricityConsumptionFetcher } from "./ElectricityConsumptionFetcher";
 
-export class MemoryElectricityConsumptionFetcher {
+export class MemoryElectricityConsumptionFetcher
+  implements ElectricityConsumptionFetcher
+{
   constructor(
     private readonly electricityConsumptionMap: Map<
       string,
