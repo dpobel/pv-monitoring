@@ -171,7 +171,7 @@ describe(
         await doc.loadInfo();
         const sheet = doc.sheetsByTitle[month.reportName];
         const csvStream = await sheet.downloadAsCSV();
-        const lines = csvStream.toString().split("\n");
+        const lines = new TextDecoder("utf-8").decode(csvStream).split("\n");
         assert.equal(
           lines[0].trim(),
           "Date,HC Référence,HP Référence,Total Référence,Prix Référence,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.,Total cons.,Comp. an-1",
@@ -244,7 +244,7 @@ describe(
         await doc.loadInfo();
         const sheet = doc.sheetsByTitle[report.name];
         const csvStream = await sheet.downloadAsCSV();
-        const lines = csvStream.toString().split("\n");
+        const lines = new TextDecoder("utf-8").decode(csvStream).split("\n");
         assert.equal(lines.length, report.month.dayNumber + 5);
         assert.equal(
           lines[0].trim(),
