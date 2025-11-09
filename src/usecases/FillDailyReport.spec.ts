@@ -23,12 +23,25 @@ describe("FillDailyReport", () => {
   const producedSolarEnergy = new ProducedSolarEnergy(120);
   const soldSolarEnergy = new SoldSolarEnergy(100);
 
-  const repository = new MemoryMonthlyReportRepository();
+  const repository = new MemoryMonthlyReportRepository(
+    new Map<string, DailyReport>([
+      [
+        previousYearDay.name,
+        new DailyReport(
+          previousYearDay,
+          referenceYearConsumption,
+          new ElectricityConsumption(0, 0),
+          previousYearConsumption,
+          new ProducedSolarEnergy(0),
+          new SoldSolarEnergy(0),
+        ),
+      ],
+    ]),
+  );
   const basePricesFinder = new TestBasePricesFinder();
   const sut = new FillDailyReport(
     new MemoryElectricityConsumptionFetcher(
       new Map<string, ElectricityConsumption>([
-        [day.inReferenceYear.name, referenceYearConsumption],
         [previousYearDay.name, previousYearConsumption],
         [day.name, consumption],
       ]),

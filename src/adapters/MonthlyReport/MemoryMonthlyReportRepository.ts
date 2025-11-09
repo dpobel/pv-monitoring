@@ -1,9 +1,22 @@
 import { DailyReport } from "../../DailyReport";
+import { Day } from "../../Day";
 import { MonthlyReport } from "../../MonthlyReport";
 import { BasePrices } from "../BasePrices/BasePricesFinder";
 import { MonthlyReportRepository } from "./MonthlyReportRepository";
 
 export class MemoryMonthlyReportRepository implements MonthlyReportRepository {
+  constructor(
+    private readonly dailyReportsMap = new Map<string, DailyReport>(),
+  ) {}
+
+  public async findDailyReport(day: Day): Promise<DailyReport> {
+    const dailyReport = this.dailyReportsMap.get(day.name);
+    if (!dailyReport) {
+      throw new Error(`Daily report for day ${day.name} not found`);
+    }
+    return dailyReport;
+  }
+
   public readonly createData: {
     report: MonthlyReport;
     basePricesList: BasePrices[];

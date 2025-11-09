@@ -12,8 +12,4 @@ export class DailyReport {
     public readonly producedSolarEnergy: ProducedSolarEnergy,
     public readonly soldSolarEnergy: SoldSolarEnergy,
   ) {}
-
-  get reportName() {
-    return this.day.month.reportName;
-  }
 }

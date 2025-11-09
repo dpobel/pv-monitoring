@@ -52,6 +52,77 @@ describe(
       }
     });
 
+    describe("findDailyReport", () => {
+      const day = new Day(new Month(11, 2024), 22);
+
+      beforeEach(async () => {
+        doc.resetLocalCache();
+        await doc.loadInfo();
+        const templateSheet = doc.sheetsByTitle["template store test"];
+        await templateSheet.duplicate({ title: day.month.reportName });
+      });
+
+      describe("given a report has been stored for the day", () => {
+        beforeEach(async () => {
+          const basePrices = {
+            month: [
+              {
+                label: "Test base prices 2",
+                offPeakHours: 0.01,
+                peakHours: 0.02,
+                solar: 0.03,
+              },
+              {
+                label: "Test base prices",
+                offPeakHours: 0.1,
+                peakHours: 0.2,
+                solar: 0.3,
+              },
+            ],
+            day: {
+              label: "Test base prices",
+              offPeakHours: 0.1,
+              peakHours: 0.2,
+              solar: 0.3,
+            },
+          };
+
+          await sut.store(
+            new DailyReport(
+              day,
+              new ElectricityConsumption(8000, 12000),
+              new ElectricityConsumption(6000, 7000),
+              new ElectricityConsumption(9000, 10000),
+              new ProducedSolarEnergy(5000),
+              new SoldSolarEnergy(2000),
+            ),
+            basePrices,
+          );
+          doc.resetLocalCache();
+        });
+
+        it("should return the daily report", async () => {
+          const report = await sut.findDailyReport(day);
+
+          assert.equal(report.day, day);
+          assert.deepEqual(report.referenceYearElectricityConsumption, {
+            offPeakHours: 8000,
+            peakHours: 12000,
+          });
+          assert.deepEqual(report.previousYearElectricityConsumption, {
+            offPeakHours: 6000,
+            peakHours: 7000,
+          });
+          assert.deepEqual(report.electricityConsumption, {
+            offPeakHours: 9000,
+            peakHours: 10000,
+          });
+          assert.deepEqual(report.producedSolarEnergy, { quantity: 5000 });
+          assert.deepEqual(report.soldSolarEnergy, { quantity: 2000 });
+        });
+      });
+    });
+
     describe("store", () => {
       const month = new Month(11, 2024);
       const basePrices = {
