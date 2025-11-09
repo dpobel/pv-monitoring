@@ -170,15 +170,10 @@ describe("Month", () => {
     });
   });
 
-  describe("minusYears", () => {
+  describe("minusAYear", () => {
     it("should return the month of the previous year", () => {
       const month = new Month(11, 2024);
-      assert.deepEqual(month.minusYears(1), new Month(11, 2023));
-    });
-
-    it("should return the month of the previous previous year", () => {
-      const month = new Month(11, 2024);
-      assert.deepEqual(month.minusYears(2), new Month(11, 2022));
+      assert.deepEqual(month.minusAYear, new Month(11, 2023));
     });
   });
 

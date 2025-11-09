@@ -37,7 +37,7 @@ export class Day {
 
   get minusAYear() {
     // TODO leap year ?
-    return new Day(this.month.minusYears(1), this.day); // TODO restore .minusAYear
+    return new Day(this.month.minusAYear, this.day);
   }
 
   toString() {
