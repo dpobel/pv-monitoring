@@ -52,6 +52,77 @@ describe(
       }
     });
 
+    describe("findDailyReport", () => {
+      const day = new Day(new Month(11, 2024), 22);
+
+      beforeEach(async () => {
+        doc.resetLocalCache();
+        await doc.loadInfo();
+        const templateSheet = doc.sheetsByTitle["template store test"];
+        await templateSheet.duplicate({ title: day.month.reportName });
+      });
+
+      describe("given a report has been stored for the day", () => {
+        beforeEach(async () => {
+          const basePrices = {
+            month: [
+              {
+                label: "Test base prices 2",
+                offPeakHours: 0.01,
+                peakHours: 0.02,
+                solar: 0.03,
+              },
+              {
+                label: "Test base prices",
+                offPeakHours: 0.1,
+                peakHours: 0.2,
+                solar: 0.3,
+              },
+            ],
+            day: {
+              label: "Test base prices",
+              offPeakHours: 0.1,
+              peakHours: 0.2,
+              solar: 0.3,
+            },
+          };
+
+          await sut.store(
+            new DailyReport(
+              day,
+              new ElectricityConsumption(8000, 12000),
+              new ElectricityConsumption(6000, 7000),
+              new ElectricityConsumption(9000, 10000),
+              new ProducedSolarEnergy(5000),
+              new SoldSolarEnergy(2000),
+            ),
+            basePrices,
+          );
+          doc.resetLocalCache();
+        });
+
+        it("should return the daily report", async () => {
+          const report = await sut.findDailyReport(day);
+
+          assert.equal(report.day, day);
+          assert.deepEqual(report.referenceYearElectricityConsumption, {
+            offPeakHours: 8000,
+            peakHours: 12000,
+          });
+          assert.deepEqual(report.previousYearElectricityConsumption, {
+            offPeakHours: 6000,
+            peakHours: 7000,
+          });
+          assert.deepEqual(report.electricityConsumption, {
+            offPeakHours: 9000,
+            peakHours: 10000,
+          });
+          assert.deepEqual(report.producedSolarEnergy, { quantity: 5000 });
+          assert.deepEqual(report.soldSolarEnergy, { quantity: 2000 });
+        });
+      });
+    });
+
     describe("store", () => {
       const month = new Month(11, 2024);
       const basePrices = {
@@ -88,6 +159,7 @@ describe(
         await sut.store(
           new DailyReport(
             new Day(month, 2),
+            new ElectricityConsumption(1111, 8888),
             new ElectricityConsumption(2222, 9999),
             new ElectricityConsumption(3333, 4444),
             new ProducedSolarEnergy(1313),
@@ -102,34 +174,34 @@ describe(
         const lines = csvStream.toString().split("\n");
         assert.equal(
           lines[0].trim(),
-          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.,Total cons.,Comp. an-1",
+          "Date,HC Référence,HP Référence,Total Référence,Prix Référence,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.,Total cons.,Comp. an-1",
         );
         assert.equal(
           lines[1].trim(),
-          "01/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A",
+          "01/11/2024,0,0,0,0,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A",
         );
         assert.equal(
           lines[2].trim(),
-          '02/11/2024,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52","1,52",-31%,7373,-40%',
+          '02/11/2024,1111,8888,9999,"1,89",2222,9999,12221,"2,22",3333,4444,7777,"1,22",-22%,"0,67",1313,1717,"0,52","1,19",-31%,7373,-40%',
         );
         for (let i = 3; i <= month.dayNumber; i++) {
           assert.equal(
             lines[i].trim(),
-            `${i.toString().padStart(2, "0")}/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A`,
+            `${i.toString().padStart(2, "0")}/11/2024,0,0,0,0,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A`,
           );
         }
         assert.equal(
           lines[month.dayNumber + 1].trim(),
-          'Total,2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,1,1313,1717,"0,52","1,52",-31%,7373,-40%',
+          'Total,1111,8888,9999,"1,89",2222,9999,12221,"2,22",3333,4444,7777,"1,22",-36%,"0,67",1313,1717,"0,52","1,19",-31%,7373,-40%',
         );
-        assert.equal(lines[month.dayNumber + 2].trim(), ",,,,,,,,,,,,,,,,,");
+        assert.equal(lines[month.dayNumber + 2].trim().replace(/,+$/, ""), "");
         assert.equal(
-          lines[month.dayNumber + 3].trim(),
-          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2,,,,,,,,,,,',
+          lines[month.dayNumber + 3].trim().replace(/,+$/, ""),
+          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2',
         );
         assert.equal(
-          lines[month.dayNumber + 4].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices,,,,,,,,,,,',
+          lines[month.dayNumber + 4].trim().replace(/,+$/, ""),
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices',
         );
       });
     });
@@ -141,6 +213,7 @@ describe(
         const report = MonthlyReport.fromMonth(month);
         report.dailyReports[0] = new DailyReport(
           new Day(month, 1),
+          new ElectricityConsumption(2000, 3000),
           new ElectricityConsumption(2372, 9700),
           new ElectricityConsumption(3020, 4230),
           new ProducedSolarEnergy(8289),
@@ -148,6 +221,7 @@ describe(
         );
         report.dailyReports[1] = new DailyReport(
           new Day(month, 2),
+          new ElectricityConsumption(10000, 10000),
           new ElectricityConsumption(10000, 10000),
           new ElectricityConsumption(10000, 10000),
           new ProducedSolarEnergy(0),
@@ -174,37 +248,37 @@ describe(
         assert.equal(lines.length, report.month.dayNumber + 5);
         assert.equal(
           lines[0].trim(),
-          "Date,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.,Total cons.,Comp. an-1",
+          "Date,HC Référence,HP Référence,Total Référence,Prix Référence,HC an-1,HP an-1,Total an-1,Prix an-1,HC,HP,Total,Prix,Évolution,Économie,Production PV,Qté vendue,Gain vente,Gain total,Autocons.,Total cons.,Comp. an-1",
         );
         assert.equal(
           lines[1].trim(),
-          '01/11/2024,2372,9700,12072,"2,18",3020,4230,7250,"1,15",-40%,"1,03",8289,7289,"2,19","3,22",12%,8250,-32%',
+          '01/11/2024,2000,3000,5000,"0,8",2372,9700,12072,"2,18",3020,4230,7250,"1,15",45%,"-0,35",8289,7289,"2,19","1,84",12%,8250,-32%',
         );
         assert.equal(
           lines[2].trim(),
-          "02/11/2024,10000,10000,20000,3,10000,10000,20000,3,0%,0,0,0,0,0,N/A,20000,0%",
+          "02/11/2024,10000,10000,20000,3,10000,10000,20000,3,10000,10000,20000,3,0%,0,0,0,0,0,N/A,20000,0%",
         );
         for (let i = 3; i <= report.month.dayNumber; i++) {
           assert.equal(
             lines[i].trim(),
-            `${i.toString().padStart(2, "0")}/11/2024,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A`,
+            `${i.toString().padStart(2, "0")}/11/2024,0,0,0,0,0,0,0,0,0,0,0,0,N/A,0,0,0,0,0,N/A,0,N/A`,
           );
         }
         assert.equal(
           lines[report.month.dayNumber + 1].trim(),
-          'Total,12372,19700,32072,"5,18",13020,14230,27250,"4,15",-15%,"1,03",8289,7289,"2,19","3,22",12%,28250,-12%',
+          'Total,12000,13000,25000,"3,8",12372,19700,32072,"5,18",13020,14230,27250,"4,15",9%,"-0,35",8289,7289,"2,19","1,84",12%,28250,-12%',
         );
         assert.equal(
-          lines[report.month.dayNumber + 2].trim(),
-          ",,,,,,,,,,,,,,,,,",
+          lines[report.month.dayNumber + 2].trim().replace(/,+$/, ""),
+          "",
         );
         assert.equal(
-          lines[report.month.dayNumber + 3].trim(),
-          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices,,,,,,,,,,,',
+          lines[report.month.dayNumber + 3].trim().replace(/,+$/, ""),
+          'Prix HC/kwh,"0,1",Prix HP/kwh,"0,2",Prix revente/kwh,"0,3",Test base prices',
         );
         assert.equal(
-          lines[report.month.dayNumber + 4].trim(),
-          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2,,,,,,,,,,,',
+          lines[report.month.dayNumber + 4].trim().replace(/,+$/, ""),
+          'Prix HC/kwh,"0,01",Prix HP/kwh,"0,02",Prix revente/kwh,"0,03",Test base prices 2',
         );
       });
     });

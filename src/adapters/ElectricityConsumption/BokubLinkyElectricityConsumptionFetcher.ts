@@ -5,6 +5,7 @@ import { PeakHoursSchedule } from "../../PeakHoursSchedule";
 import { Time } from "../../Time";
 import { InvalidTimeSlotSameStartAndEnd, TimeSlot } from "../../TimeSlot";
 import { Logger } from "../Logger/Logger";
+import { ElectricityConsumptionFetcher } from "./ElectricityConsumptionFetcher";
 
 export class FailToFetchElectricityConsumption extends Error {
   public readonly responseMessage: unknown;
@@ -22,7 +23,9 @@ export class FailToFetchElectricityConsumption extends Error {
   }
 }
 
-export class BokubLinkyElectricityConsumptionFetcher {
+export class BokubLinkyElectricityConsumptionFetcher
+  implements ElectricityConsumptionFetcher
+{
   constructor(
     private readonly linkyClient: LinkyClient,
     private readonly peakHoursSchedule: PeakHoursSchedule,

@@ -5,8 +5,11 @@ import {
 } from "google-spreadsheet";
 import { DailyReport } from "../../DailyReport";
 import { Day } from "../../Day";
+import { ElectricityConsumption } from "../../ElectricityConsumption";
 import { Month } from "../../Month";
 import { MonthlyReport } from "../../MonthlyReport";
+import { ProducedSolarEnergy } from "../../ProducedSolarEnergy";
+import { SoldSolarEnergy } from "../../SoldSolarEnergy";
 import { BasePrices } from "../BasePrices/BasePricesFinder";
 import { MonthlyReportRepository } from "./MonthlyReportRepository";
 import { RowBuilder } from "./RowBuilder";
@@ -24,8 +27,8 @@ class MonthlyReportNotFound extends Error {
 }
 
 class DailyReportRowNotFound extends Error {
-  constructor(dailyReport: DailyReport) {
-    super(`Row for daily report of "${dailyReport.day.name}"`);
+  constructor(day: Day) {
+    super(`Row for daily report of "${day.name}"`);
   }
 }
 
@@ -153,9 +156,9 @@ export class GoogleSpreadsheetMonthlyReportRepository
     await sheet.saveUpdatedCells();
   }
 
-  private async loadSheet(dailyReport: DailyReport) {
+  private async loadSheet(day: Day) {
     const doc = await this.loadDocument();
-    const reportName = dailyReport.reportName;
+    const reportName = day.month.reportName;
 
     if (!doc.sheetsByTitle[reportName]) {
       throw new MonthlyReportNotFound(reportName);
@@ -163,27 +166,51 @@ export class GoogleSpreadsheetMonthlyReportRepository
     return doc.sheetsByTitle[reportName];
   }
 
-  private async findRow(
-    sheet: GoogleSpreadsheetWorksheet,
-    dailyReport: DailyReport,
-  ) {
+  private async findRow(sheet: GoogleSpreadsheetWorksheet, day: Day) {
     await sheet.loadHeaderRow(HEADER_ROW_INDEX);
     const rows = await sheet.getRows();
 
-    return rows.find((row) => {
-      return row.get("Date") === dailyReport.day.name;
+    const row = rows.find((row) => {
+      return row.get("Date") === day.name;
     });
+
+    if (!row) {
+      throw new DailyReportRowNotFound(day);
+    }
+    return row;
+  }
+
+  public async findDailyReport(day: Day) {
+    const sheet = await this.loadSheet(day);
+    const row = await this.findRow(sheet, day);
+    // TODO: names of headers are also in RowBuilder, this should be centralized somehow
+    return new DailyReport(
+      day,
+      row.get("HC Référence")
+        ? new ElectricityConsumption(
+            Number(row.get("HC Référence")),
+            Number(row.get("HP Référence")),
+          )
+        : new ElectricityConsumption(
+            Number(row.get("HC an-1")),
+            Number(row.get("HP an-1")),
+          ),
+      new ElectricityConsumption(
+        Number(row.get("HC an-1")),
+        Number(row.get("HP an-1")),
+      ),
+      new ElectricityConsumption(Number(row.get("HC")), Number(row.get("HP"))),
+      new ProducedSolarEnergy(Number(row.get("Production PV"))),
+      new SoldSolarEnergy(Number(row.get("Qté vendue"))),
+    );
   }
 
   async store(
     dailyReport: DailyReport,
     basePrices: { month: BasePrices[]; day: BasePrices },
   ): Promise<void> {
-    const sheet = await this.loadSheet(dailyReport);
-    const row = await this.findRow(sheet, dailyReport);
-    if (!row) {
-      throw new DailyReportRowNotFound(dailyReport);
-    }
+    const sheet = await this.loadSheet(dailyReport.day);
+    const row = await this.findRow(sheet, dailyReport.day);
     const basePricesA1Mapping = await this.findBasePricesA1Mapping(
       basePrices,
       dailyReport.day,

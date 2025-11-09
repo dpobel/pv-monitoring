@@ -26,6 +26,7 @@ export class FillDailyReport implements FillDailyReportInterface {
   async execute(command: FillDailyReportCommand) {
     const dailyReport = new DailyReport(
       command.day,
+      await this.fetchReferenceYearElectricityConsumption(command.day),
       await this.electricityConsumptionFetcher.fetch(command.day.minusAYear),
       await this.electricityConsumptionFetcher.fetch(command.day),
       await this.producedSolarEnergyFetcher.fetch(command.day),
@@ -35,5 +36,12 @@ export class FillDailyReport implements FillDailyReportInterface {
       month: this.basePricesFinder.findForMonth(command.day.month),
       day: this.basePricesFinder.findForDay(command.day),
     });
+  }
+
+  private async fetchReferenceYearElectricityConsumption(day: Day) {
+    const previousYearDay = day.minusAYear;
+    const dailyReport =
+      await this.monthlyReportRepository.findDailyReport(previousYearDay);
+    return dailyReport.referenceYearElectricityConsumption;
   }
 }
