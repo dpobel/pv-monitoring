@@ -36,7 +36,7 @@
     "tsx": "^4.20.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.3.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/minimist": "^1.2.5",
     "@types/node": "^24.10.0",
