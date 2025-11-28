@@ -1,6 +1,6 @@
+import { Logger } from "../adapters/Logger/Logger";
 import { Day } from "../Day";
 import { Month } from "../Month";
-import { Logger } from "../adapters/Logger/Logger";
 import {
   FillDailyReportCommand,
   FillDailyReportInterface,

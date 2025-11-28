@@ -1,10 +1,10 @@
-import { DailyReport } from "../DailyReport";
-import { Day } from "../Day";
 import { BasePricesFinder } from "../adapters/BasePrices/BasePricesFinder";
 import { ElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/ElectricityConsumptionFetcher";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
 import { ProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/ProducedSolarEnergyFetcher";
 import { SoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/SoldSolarEnergyFetcher";
+import { DailyReport } from "../DailyReport";
+import { Day } from "../Day";
 
 export class FillDailyReportCommand {
   constructor(public readonly day: Day) {}

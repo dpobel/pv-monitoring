@@ -8,7 +8,7 @@
     "initialize-monthly-report": "tsx cli.ts initialize-monthly-report",
     "fill-yesterday-report": "tsx cli.ts fill-yesterday-report",
     "fill-daily-report": "tsx cli.ts fill-daily-report",
-    "lint": "biome lint",
+    "lint": "biome ci",
     "type-check": "tsc --noEmit",
     "test:unit": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*spec.ts'",
     "test:unit:watch": "node --import tsx --import dotenv/config --watch --test-reporter spec --test 'src/**/*spec.ts'",

@@ -1,16 +1,16 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
+import { TestBasePricesFinder } from "../adapters/BasePrices/TestBasePricesFinder";
+import { MemoryElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
+import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
+import { MemoryProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/MemoryProducedSolarEnergyFetcher";
+import { MemorySoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
 import { DailyReport } from "../DailyReport";
 import { Day } from "../Day";
 import { ElectricityConsumption } from "../ElectricityConsumption";
 import { Month } from "../Month";
 import { ProducedSolarEnergy } from "../ProducedSolarEnergy";
 import { SoldSolarEnergy } from "../SoldSolarEnergy";
-import { TestBasePricesFinder } from "../adapters/BasePrices/TestBasePricesFinder";
-import { MemoryElectricityConsumptionFetcher } from "../adapters/ElectricityConsumption/MemoryElectricityConsumptionFetcher";
-import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
-import { MemoryProducedSolarEnergyFetcher } from "../adapters/ProducedSolarEnergy/MemoryProducedSolarEnergyFetcher";
-import { MemorySoldSolarEnergyFetcher } from "../adapters/SoldSolarEnergy/MemorySoldSolarEnergyFetcher";
 import { FillDailyReport, FillDailyReportCommand } from "./FillDailyReport";
 
 describe("FillDailyReport", () => {
