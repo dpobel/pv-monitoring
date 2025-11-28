@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { Month } from "../Month";
 import { TestBasePricesFinder } from "../adapters/BasePrices/TestBasePricesFinder";
 import { MemoryMonthlyReportRepository } from "../adapters/MonthlyReport/MemoryMonthlyReportRepository";
+import { Month } from "../Month";
 import {
   InitializeMonthlyReport,
   InitializeMonthlyReportCommand,

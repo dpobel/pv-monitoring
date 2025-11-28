@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { beforeEach, describe, it } from "node:test";
+import { NullLogger } from "../adapters/Logger/NullLogger";
 import { Day } from "../Day";
 import { Month } from "../Month";
-import { NullLogger } from "../adapters/Logger/NullLogger";
 import {
   FillDailyReportCommand,
   FillDailyReportInterface,

@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { beforeEach, describe, it } from "node:test";
-import { Month } from "../Month";
 import { NullLogger } from "../adapters/Logger/NullLogger";
+import { Month } from "../Month";
 import {
   InitializeMonthlyReportCommand,
   InitializeMonthlyReportInterface,

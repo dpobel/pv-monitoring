@@ -1,5 +1,5 @@
-import { Month } from "../Month";
 import { Logger } from "../adapters/Logger/Logger";
+import { Month } from "../Month";
 import {
   InitializeMonthlyReportCommand,
   InitializeMonthlyReportInterface,

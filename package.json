@@ -8,7 +8,7 @@
     "initialize-monthly-report": "tsx cli.ts initialize-monthly-report",
     "fill-yesterday-report": "tsx cli.ts fill-yesterday-report",
     "fill-daily-report": "tsx cli.ts fill-daily-report",
-    "lint": "biome lint",
+    "lint": "biome ci",
     "type-check": "tsc --noEmit",
     "test:unit": "node --import tsx --import dotenv/config --test-reporter spec --test 'src/**/*spec.ts'",
     "test:unit:watch": "node --import tsx --import dotenv/config --watch --test-reporter spec --test 'src/**/*spec.ts'",
@@ -36,7 +36,7 @@
     "tsx": "^4.20.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.3.8",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/minimist": "^1.2.5",
     "@types/node": "^24.10.1",

@@ -1,7 +1,7 @@
-import { Month } from "../Month";
-import { MonthlyReport } from "../MonthlyReport";
 import { BasePricesFinder } from "../adapters/BasePrices/BasePricesFinder";
 import { MonthlyReportRepository } from "../adapters/MonthlyReport/MonthlyReportRepository";
+import { Month } from "../Month";
+import { MonthlyReport } from "../MonthlyReport";
 
 export class InitializeMonthlyReportCommand {
   constructor(public readonly month: Month) {}
