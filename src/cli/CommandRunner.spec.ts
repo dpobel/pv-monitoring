@@ -6,7 +6,7 @@ import { CommandRunner } from "./CommandRunner";
 
 describe("CommandRunner", () => {
   let testCommandExecuted = false;
-  let testCommandOptions: Record<string, unknown> | undefined = undefined;
+  let testCommandOptions: Record<string, unknown> | undefined ;
   class TestCommand implements CliCommand {
     name = "test-command";
 
