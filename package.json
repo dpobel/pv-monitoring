@@ -40,7 +40,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/minimist": "^1.2.5",
     "@types/node": "^24.10.1",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "nock": "^14.0.10",
     "typescript": "^5.9.3"
   }
