@@ -3,7 +3,8 @@ name: Daily Report
 on:
   workflow_dispatch:
   schedule:
-    - cron: "37 4 * * *"
+    - cron: "37 6 * * *"
+      timezone: "Europe/Paris"
 
 jobs:
   dailyreport:
