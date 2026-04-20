@@ -3,7 +3,8 @@ name: Initialize Monthly Report
 on:
   workflow_dispatch:
   schedule:
-    - cron: "23 1 1 * *"
+    - cron: "23 3 1 * *"
+      timezone: "Europe/Paris"
 
 jobs:
   initializemonthlyreport:
