@@ -41,7 +41,7 @@
     "@types/minimist": "^1.2.5",
     "@types/node": "^24.12.2",
     "jsonwebtoken": "^9.0.3",
-    "nock": "^14.0.12",
+    "nock": "^14.0.13",
     "typescript": "^5.9.3"
   }
 }
