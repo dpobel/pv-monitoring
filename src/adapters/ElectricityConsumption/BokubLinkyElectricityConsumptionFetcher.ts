@@ -83,13 +83,9 @@ export class BokubLinkyElectricityConsumptionFetcher
       }
       previousEndTime = endTime;
     }
-    const divisor =
-      (interval_reading.length - (interval_reading.length % 24)) / 24;
+    const divisor = interval_reading[0]?.interval_length === "PT15M" ? 4 : 2;
     // each value is a mean of the power consumption during a timeslot so we need to divide by the number of timeslot
-    // per hour. Since the beginning of may 2026, intervals are 15 minutes long, previously they were 30 minutes long,
-    // so we need to figure out the divisor based on the number of intervals per day, we can assume that the number of
-    // intervals per day is always a multiple of 24 except on the days of daylight saving time change where there are 2
-    // or 4 more intervals.
+    // per hour. Since the beginning of may 2026, intervals are 15 minutes long, previously they were 30 minutes long.
     return new ElectricityConsumption(
       totalOffPeak / divisor,
       totalPeak / divisor,
