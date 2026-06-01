@@ -15,6 +15,7 @@ import {
 } from "./BokubLinkyElectricityConsumptionFetcher";
 import {
   daylightSavingTimeEndLoadCurveReponseData,
+  loadCurvePT15MResponseData,
   loadCurveResponseData,
   unorderedLoadCurveResponseData,
 } from "./fixtures/fixtures";
@@ -51,6 +52,25 @@ describe("BokubLinkyElectricityConsumptionFetcher", () => {
       "2024-11-16",
     ]);
     assert.deepEqual(consumption, new ElectricityConsumption(2830, 4187));
+  });
+
+  it("should fetch the consumption of the day when split into 15 minutes intervals", async () => {
+    const day = new Day(new Month(5, 2026), 8);
+    const { mock: functionContext } = mock.method(
+      client,
+      "getLoadCurve",
+      () => {
+        return Promise.resolve(loadCurvePT15MResponseData);
+      },
+    );
+
+    const consumption = await sut.fetch(day);
+    assert.equal(functionContext.callCount(), 1);
+    assert.deepEqual(functionContext.calls[0].arguments, [
+      "2026-05-08",
+      "2026-05-09",
+    ]);
+    assert.deepEqual(consumption, new ElectricityConsumption(1051, 2883));
   });
 
   it("should fetch the consumption of the day based on an unordered measure list", async () => {

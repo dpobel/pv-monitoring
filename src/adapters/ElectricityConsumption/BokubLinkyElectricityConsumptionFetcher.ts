@@ -23,6 +23,15 @@ export class FailToFetchElectricityConsumption extends Error {
   }
 }
 
+// the `linky` library types `interval_reading` without `interval_length`, but
+// the API does return it, so we refine the type locally.
+// TODO: report or fix it in a PR
+type IntervalReading = {
+  value: string;
+  date: string;
+  interval_length: "PT15M" | "PT30M";
+};
+
 export class BokubLinkyElectricityConsumptionFetcher
   implements ElectricityConsumptionFetcher
 {
@@ -43,9 +52,11 @@ export class BokubLinkyElectricityConsumptionFetcher
         response,
       );
       return this.computeConsumption(
-        response.interval_reading.sort((measure1, measure2) => {
-          return measure1.date.localeCompare(measure2.date);
-        }),
+        (response.interval_reading as IntervalReading[]).sort(
+          (measure1, measure2) => {
+            return measure1.date.localeCompare(measure2.date);
+          },
+        ),
       );
     } catch (error) {
       throw new FailToFetchElectricityConsumption(day, error as Error);
@@ -53,14 +64,18 @@ export class BokubLinkyElectricityConsumptionFetcher
   }
 
   private computeConsumption(
-    interval_reading: { value: string; date: string }[],
+    interval_reading: IntervalReading[],
   ): ElectricityConsumption {
     let totalOffPeak = 0;
     let totalPeak = 0;
     let previousEndTime = new Time(0, 0, 0);
     for (const metering of interval_reading) {
       const endTime = this.createTime(metering.date);
-      const timeSlot = this.createTimeSlot(previousEndTime, endTime);
+      const timeSlot = this.createTimeSlot(
+        previousEndTime,
+        endTime,
+        metering.interval_length,
+      );
       if (this.peakHoursSchedule.isInsidePeakHour(timeSlot)) {
         totalPeak += Number(metering.value);
       } else {
@@ -68,13 +83,23 @@ export class BokubLinkyElectricityConsumptionFetcher
       }
       previousEndTime = endTime;
     }
-    return new ElectricityConsumption(totalOffPeak / 2, totalPeak / 2);
+    const divisor = interval_reading[0]?.interval_length === "PT15M" ? 4 : 2;
+    // each value is a mean of the power consumption during a timeslot so we need to divide by the number of timeslot
+    // per hour. Since the beginning of may 2026, intervals are 15 minutes long, previously they were 30 minutes long.
+    return new ElectricityConsumption(
+      totalOffPeak / divisor,
+      totalPeak / divisor,
+    );
   }
 
-  private createTimeSlot(startTime: Time, endTime: Time) {
-    // this assumes time slots are 30 minutes long and day light saving time related issue is
-    // detected based on the fact that both times are the same and are either 02:00:00 or 02:30:00
-    // that could perfectly happen not only on DST change days, but the probability is low enough to ignore it
+  private createTimeSlot(
+    startTime: Time,
+    endTime: Time,
+    intervalLength: "PT15M" | "PT30M",
+  ) {
+    // day light saving time related issue is detected based on the fact that both times are the same and are either
+    // 02:00:00, 02:15:00, 02:30:00 or 02:45:00 that could perfectly happen not only on DST change days, but the
+    // probability is low enough to ignore it
     try {
       return new TimeSlot(startTime, endTime);
     } catch (error) {
@@ -82,7 +107,10 @@ export class BokubLinkyElectricityConsumptionFetcher
         error instanceof InvalidTimeSlotSameStartAndEnd &&
         error.isDayLightSavingTime()
       ) {
-        return new TimeSlot(startTime, startTime.addMinutes(30));
+        return new TimeSlot(
+          startTime,
+          startTime.addMinutes(intervalLength === "PT30M" ? 30 : 15),
+        );
       }
       throw error;
     }
