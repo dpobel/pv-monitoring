@@ -97,9 +97,9 @@ export class BokubLinkyElectricityConsumptionFetcher
     endTime: Time,
     intervalLength: "PT15M" | "PT30M",
   ) {
-    // this assumes time slots are 30 minutes long and day light saving time related issue is
-    // detected based on the fact that both times are the same and are either 02:00:00 or 02:30:00
-    // that could perfectly happen not only on DST change days, but the probability is low enough to ignore it
+    // day light saving time related issue is detected based on the fact that both times are the same and are either
+    // 02:00:00, 02:15:00, 02:30:00 or 02:45:00 that could perfectly happen not only on DST change days, but the
+    // probability is low enough to ignore it
     try {
       return new TimeSlot(startTime, endTime);
     } catch (error) {

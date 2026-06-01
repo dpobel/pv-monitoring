@@ -14,7 +14,9 @@ export class InvalidTimeSlotSameStartAndEnd extends Error {
   isDayLightSavingTime(): boolean {
     return (
       this.time.isEqualTo(new Time(2, 0, 0)) ||
-      this.time.isEqualTo(new Time(2, 30, 0))
+      this.time.isEqualTo(new Time(2, 15, 0)) ||
+      this.time.isEqualTo(new Time(2, 30, 0)) ||
+      this.time.isEqualTo(new Time(2, 45, 0))
     );
   }
 }
