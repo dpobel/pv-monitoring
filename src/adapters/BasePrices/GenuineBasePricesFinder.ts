@@ -30,10 +30,17 @@ const between20250801and20250815 = {
   solar: 0.1269,
 };
 
-const after20250915 = {
+const between20250915and20260915 = {
   label: "Après le 15 septembre 2025",
   offPeakHours: 0.1637,
   peakHours: 0.2082,
+  solar: 0.1269,
+};
+
+const after20260915 = {
+  label: "Après le 15 septembre 2026",
+  offPeakHours: 0.1572,
+  peakHours: 0.225,
   solar: 0.1269,
 };
 
@@ -59,9 +66,13 @@ export class GenuineBasePricesFinder implements BasePricesFinder {
     }
     const september2025 = new Month(9, 2025);
     if (month.isEqual(september2025)) {
-      return [between20250801and20250815, after20250915];
+      return [between20250801and20250815, between20250915and20260915];
     }
-    return [after20250915];
+    const september2026 = new Month(9, 2026);
+    if (month.isBefore(september2026)) {
+      return [between20250915and20260915];
+    }
+    return [after20260915];
   }
 
   findForDay(day: Day) {
@@ -77,6 +88,9 @@ export class GenuineBasePricesFinder implements BasePricesFinder {
     if (day.isBefore(new Day(new Month(9, 2025), 15))) {
       return between20250801and20250815;
     }
-    return after20250915;
+    if (day.isBefore(new Day(new Month(9, 2026), 15))) {
+      return between20250915and20260915;
+    }
+    return after20260915;
   }
 }

@@ -118,10 +118,21 @@ describe("GenuineBasePricesFinder", () => {
       ]);
     });
 
-    it("should return base prices list for months after September 2025", () => {
+    it("should return base prices list for months after September 2025 and before September 2026", () => {
       const oct2025 = new Month(10, 2025);
       const basePricesList1 = sut.findForMonth(oct2025);
       assert.deepEqual(basePricesList1, [
+        {
+          label: "Après le 15 septembre 2025",
+          offPeakHours: 0.1637,
+          peakHours: 0.2082,
+          solar: 0.1269,
+        },
+      ]);
+
+      const august2026 = new Month(8, 2026);
+      const basePricesList2 = sut.findForMonth(august2026);
+      assert.deepEqual(basePricesList2, [
         {
           label: "Après le 15 septembre 2025",
           offPeakHours: 0.1637,
@@ -251,6 +262,36 @@ describe("GenuineBasePricesFinder", () => {
         label: "Après le 15 septembre 2025",
         offPeakHours: 0.1637,
         peakHours: 0.2082,
+        solar: 0.1269,
+      });
+    });
+
+    it("should return base prices for days in September 2026", () => {
+      const day1 = new Day(new Month(9, 2026), 1);
+      const day2 = new Day(new Month(9, 2026), 18);
+      const basePrices1 = sut.findForDay(day1);
+      assert.deepEqual(basePrices1, {
+        label: "Après le 15 septembre 2025",
+        offPeakHours: 0.1637,
+        peakHours: 0.2082,
+        solar: 0.1269,
+      });
+      const basePrices2 = sut.findForDay(day2);
+      assert.deepEqual(basePrices2, {
+        label: "Après le 15 septembre 2026",
+        offPeakHours: 0.1572,
+        peakHours: 0.225,
+        solar: 0.1269,
+      });
+    });
+
+    it("should return base prices for days after 2026-09-15", () => {
+      const day1 = new Day(new Month(10, 2026), 5);
+      const basePrices1 = sut.findForDay(day1);
+      assert.deepEqual(basePrices1, {
+        label: "Après le 15 septembre 2026",
+        offPeakHours: 0.1572,
+        peakHours: 0.225,
         solar: 0.1269,
       });
     });
